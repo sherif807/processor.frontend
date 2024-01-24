@@ -24,12 +24,20 @@ export default function MainContent({ data }) {
     const {lightboxVisible, openLightbox, closeLightbox, lightboxRef} = useLightbox(resetInputTitle); 
     const [lightboxContent, setLightboxContent] = useState(null);
     const [upcData, setUpcData] = useState(null);
+    const [selectedUpc, setSelectedUpc] = useState(null);
 
 
     useEffect(() => {
       console.log(data);
       setCatalogItems(data);
   }, [data]);
+
+
+    useEffect(() => {
+      if (selectedUpc) {
+        console.log(`Selected UPC: ${selectedUpc}`);
+      }
+  }, [selectedUpc]);
 
 
     const updateCatalogItem = (catalogItemId, updatedData) => {
@@ -103,7 +111,7 @@ export default function MainContent({ data }) {
     setPricingData(pricingData);
 };  
 
-  const handleOpenLightBoxForUpcData = (upcData) => {
+  const handleOpenLightBoxForUpcData = () => {
     setLightboxContent('upc-data');
     openLightbox();
   };
@@ -193,7 +201,7 @@ export default function MainContent({ data }) {
                   )}          
 
                   {lightboxContent === 'upc-data' && (
-                    <UpcImageSelector upcData={upcData} />
+                    <UpcImageSelector upcData={upcData} selectedUpc={selectedUpc} setSelectedUpc={setSelectedUpc}/>
                   )}
 
                 </LightBox>

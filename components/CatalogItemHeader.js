@@ -40,13 +40,18 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
     }
 
 
-    const fetchUpcData = async () => {
+    const fetchUpcData = async (catalogItem) => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         try {
-            const response = await fetch(`${apiUrl}/api/get-upc`);
+            const response = await fetch(`${apiUrl}/api/get-upc`,{
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ catalogItemId: catalogItem.id })
+            
+            });
             const upcData = await response.json();
             setUpcData(upcData);
-            handleOpenLightBoxForUpcData();
+            handleOpenLightBoxForUpcData(catalogItem);
         } catch (error) {
             console.error('Error fetching UPC data:', error);
         }
@@ -136,7 +141,7 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
 
             <button 
                 className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
-                onClick={fetchUpcData} 
+                onClick={() => fetchUpcData(catalogItem)} 
             >
                 Update UPC
             </button>

@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const UpcImageSelector = ({ upcData }) => {
-    console.log(upcData)
-    const [selectedUpc, setSelectedUpc] = useState('');
+const UpcImageSelector = ({ upcData, selectedUpc, setSelectedUpc }) => {
 
     const handleImageClick = (upc) => {
         setSelectedUpc(upc);
-        console.log('Selected UPC:', upc);
     };
 
     return (
@@ -16,8 +13,8 @@ const UpcImageSelector = ({ upcData }) => {
                     key={upc} 
                     src={imageUrl} 
                     alt={`UPC: ${upc}`} 
-                    onClick={() => handleImageClick(upc)} 
-                    style={{ margin: '10px', cursor: 'pointer' }} 
+                    onClick={() => handleImageClick(upc)}
+                    style={{ margin: '10px', cursor: 'pointer', width: '100px', height: '100px' }} // Adjusted width and height
                 />
             ))}
             {selectedUpc && <p>Selected UPC: {selectedUpc}</p>}
