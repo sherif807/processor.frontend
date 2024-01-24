@@ -7,6 +7,7 @@ import useAmazon from '../hooks/useAmazon';
 import CatalogItem from '../components/CatalogItem';
 import LightBox from '../components/Lightbox';
 import ProductForm from '../components/ProductForm';
+import UpcImageSelector from '../components/UpcImageSelector';
 import EbayDescriptionComponent from '../components/EbayDescriptionComponent';
 import GoogleShoppingPricesComponent from '../components/GoogleShoppingPricesComponent';
 
@@ -22,6 +23,7 @@ export default function MainContent({ data }) {
     const { listAmazonProduct } = useAmazon();
     const {lightboxVisible, openLightbox, closeLightbox, lightboxRef} = useLightbox(resetInputTitle); 
     const [lightboxContent, setLightboxContent] = useState(null);
+    const [upcData, setUpcData] = useState(null);
 
 
     useEffect(() => {
@@ -101,6 +103,11 @@ export default function MainContent({ data }) {
     setPricingData(pricingData);
 };  
 
+  const handleOpenLightBoxForUpcData = (upcData) => {
+    setLightboxContent('upc-data');
+    openLightbox();
+  };
+
 
     const handleRefreshImages = () => {
       if (currentItem) {
@@ -139,6 +146,7 @@ export default function MainContent({ data }) {
                 displayedItems={displayedItems}
                 handleOpenLightBox={() => handleOpenLightboxForProduct(catalogItem)}
                 handleRefreshRelatedItems={(condition) => handleRefreshRelatedItems(catalogItem.id, condition)}
+                handleOpenLightBoxForUpcData={() => handleOpenLightBoxForUpcData()}
                 isRefreshing={isRefreshing}
                 getHistoricalPrices={getHistoricalPrices}
                 pricingData={pricingData}
@@ -149,6 +157,7 @@ export default function MainContent({ data }) {
                 isLoading={isLoading}
                 markCatalogItemChecked={(catalogItemId, checked) => markCatalogItemChecked(catalogItemId, updateCatalogItem, removeCatalogItem, checked)}
                 listAmazonProduct={listAmazonProduct}
+                setUpcData={setUpcData}
             />
         ))}
       </div>
@@ -181,7 +190,12 @@ export default function MainContent({ data }) {
 
                   {lightboxContent === 'google-data' && (
                       <GoogleShoppingPricesComponent pricingData={pricingData} /> 
-                  )}                  
+                  )}          
+
+                  {lightboxContent === 'upc-data' && (
+                    <UpcImageSelector upcData={upcData} />
+                  )}
+
                 </LightBox>
             )}
 

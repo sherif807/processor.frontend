@@ -1,7 +1,7 @@
 import { useEffect,useState, useRef } from 'react';
 import { ArrowsPointingOutIcon, ArrowPathIcon,LockClosedIcon } from '@heroicons/react/20/solid';
 
-const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelatedItems, uniqueConditions, handleFilter, conditionCounts,getHistoricalPrices, prepareItem, updateCatalogItem, isLoading, markCatalogItemChecked }) => {
+const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelatedItems, uniqueConditions, handleFilter, conditionCounts,getHistoricalPrices, prepareItem, updateCatalogItem, isLoading, markCatalogItemChecked, setUpcData, handleOpenLightBoxForUpcData }) => {
     const [showConditions, setShowConditions] = useState(false);
     const conditions = ["All", "Pre-Owned", "Refurbished", "New"];
     const dropdownRef = useRef(null);
@@ -45,7 +45,8 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
         try {
             const response = await fetch(`${apiUrl}/api/get-upc`);
             const upcData = await response.json();
-            console.log(upcData);
+            setUpcData(upcData);
+            handleOpenLightBoxForUpcData();
         } catch (error) {
             console.error('Error fetching UPC data:', error);
         }

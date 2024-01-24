@@ -7,7 +7,7 @@ import CatalogItemHeader from './CatalogItemHeader';
 
 
 
-const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct}) => {
+const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData}) => {
   
   const [filterCondition, setFilterCondition] = useState(null);
 
@@ -64,6 +64,8 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
             updateCatalogItem={updateCatalogItem}
             isLoading={isLoading}
             markCatalogItemChecked={markCatalogItemChecked}
+            handleOpenLightBoxForUpcData={handleOpenLightBoxForUpcData}
+            setUpcData={setUpcData}
           />
           <div className="flex">
             <div className="w-1/2">
