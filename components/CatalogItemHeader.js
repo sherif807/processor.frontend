@@ -141,7 +141,7 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
 
             <div>
 
-            {showUpdateUpcButton && (
+            {!showUpdateUpcButton && (
                 <button 
                     className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
                     onClick={() => fetchUpcData(catalogItem)} 
