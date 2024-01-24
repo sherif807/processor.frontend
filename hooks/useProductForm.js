@@ -11,7 +11,7 @@ const useProductForm = () => {
   const [description, setDescription] = useState(''); 
   const [pricingData, setPricingData] = useState([]);
   const [ebayDescription, setEbayDescription] = useState(''); 
-
+  const [upcData, setUpcData] = useState(null);
 
 
 
@@ -263,6 +263,30 @@ const markCatalogItemChecked = async (catalogItemId, updateCatalogItem,removeCat
 }
 
 
+  const handleUpcChange = async (upc) => {
+    setIsLoading(true);
+    setError(null);
+    const catalogItemId = currentCatalogItem.id;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+        const response = await fetch(`${apiUrl}/api/update-upc`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ catalogItemId, upc })
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const updatedCatalogItem = await response.json();
+    } catch (error) {
+        console.error('Error updating UPC:', error);
+        setError(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
+
   return {
     inputTitle,
     setInputTitle,
@@ -290,7 +314,10 @@ const markCatalogItemChecked = async (catalogItemId, updateCatalogItem,removeCat
     prepareItem,
     getEbayDescription,
     ebayDescription,
-    markCatalogItemChecked
+    markCatalogItemChecked,
+    upcData,
+    setUpcData,
+    handleUpcChange
   };
 };
 

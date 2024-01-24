@@ -4,6 +4,8 @@ import { ArrowsPointingOutIcon, ArrowPathIcon,LockClosedIcon } from '@heroicons/
 const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelatedItems, uniqueConditions, handleFilter, conditionCounts,getHistoricalPrices, prepareItem, updateCatalogItem, isLoading, markCatalogItemChecked, setUpcData, handleOpenLightBoxForUpcData }) => {
     const [showConditions, setShowConditions] = useState(false);
     const conditions = ["All", "Pre-Owned", "Refurbished", "New"];
+    const showUpdateUpcButton = catalogItem.extraSpecs && 'UPC' in catalogItem.extraSpecs;
+
     const dropdownRef = useRef(null);
 
 
@@ -139,12 +141,14 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
 
             <div>
 
-            <button 
-                className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
-                onClick={() => fetchUpcData(catalogItem)} 
-            >
-                Update UPC
-            </button>
+            {showUpdateUpcButton && (
+                <button 
+                    className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
+                    onClick={() => fetchUpcData(catalogItem)} 
+                >
+                    Update UPC
+                </button>
+            )}
 
             </div>
 

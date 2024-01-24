@@ -19,11 +19,11 @@ export default function MainContent({ data }) {
     const [catalogItems, setCatalogItems] = useState(data);
     const { displayedItems, showMoreItems, showLessItems } = useDisplayedItems(data);
     const { isRefreshing, refreshRelatedItems} = useRefreshRelatedItems();    
-    const { inputTitle, setInputTitle, resetInputTitle, isLoading, error, generateTitle, currentItem, setCurrentItem, imageResults, setImageResults, getImages, handleSubmit, selectedImages, setSelectedImages,  toggleImageSelection, getHistoricalPrices, setPricingData, pricingData, listProduct ,getBestDescription, description, setDescription, prepareItem, getEbayDescription, ebayDescription, markCatalogItemChecked } = useProductForm();    
+    const { inputTitle, setInputTitle, resetInputTitle, isLoading, error, generateTitle, currentItem, setCurrentItem, imageResults, setImageResults, getImages, handleSubmit, selectedImages, setSelectedImages,  toggleImageSelection, getHistoricalPrices, setPricingData, pricingData, listProduct ,getBestDescription, description, setDescription, prepareItem, getEbayDescription, ebayDescription, markCatalogItemChecked, upcData, setUpcData, handleUpcChange } = useProductForm();    
     const { listAmazonProduct } = useAmazon();
     const {lightboxVisible, openLightbox, closeLightbox, lightboxRef} = useLightbox(resetInputTitle); 
     const [lightboxContent, setLightboxContent] = useState(null);
-    const [upcData, setUpcData] = useState(null);
+
     const [selectedUpc, setSelectedUpc] = useState(null);
 
 
@@ -32,12 +32,6 @@ export default function MainContent({ data }) {
       setCatalogItems(data);
   }, [data]);
 
-
-    useEffect(() => {
-      if (selectedUpc) {
-        console.log(`Selected UPC: ${selectedUpc}`);
-      }
-  }, [selectedUpc]);
 
 
     const updateCatalogItem = (catalogItemId, updatedData) => {
@@ -111,9 +105,10 @@ export default function MainContent({ data }) {
     setPricingData(pricingData);
 };  
 
-  const handleOpenLightBoxForUpcData = () => {
+  const handleOpenLightBoxForUpcData = (catalogItem) => {
     setLightboxContent('upc-data');
     openLightbox();
+    setCurrentItem(catalogItem);
   };
 
 
@@ -136,6 +131,10 @@ export default function MainContent({ data }) {
     setCatalogItems(prevCatalogItems => prevCatalogItems.filter(item => item.id !== catalogItemId));
   };
   
+    const handleUpcSelected  = (upc) => {
+      handleUpcChange(upc);
+      closeLightbox();
+  }
     
 
 
@@ -154,7 +153,7 @@ export default function MainContent({ data }) {
                 displayedItems={displayedItems}
                 handleOpenLightBox={() => handleOpenLightboxForProduct(catalogItem)}
                 handleRefreshRelatedItems={(condition) => handleRefreshRelatedItems(catalogItem.id, condition)}
-                handleOpenLightBoxForUpcData={() => handleOpenLightBoxForUpcData()}
+                handleOpenLightBoxForUpcData={(catalogItem) => handleOpenLightBoxForUpcData(catalogItem)}
                 isRefreshing={isRefreshing}
                 getHistoricalPrices={getHistoricalPrices}
                 pricingData={pricingData}
@@ -201,7 +200,7 @@ export default function MainContent({ data }) {
                   )}          
 
                   {lightboxContent === 'upc-data' && (
-                    <UpcImageSelector upcData={upcData} selectedUpc={selectedUpc} setSelectedUpc={setSelectedUpc}/>
+                    <UpcImageSelector upcData={upcData} setSelectedUpc={setSelectedUpc} handleUpcSelected={handleUpcSelected} currentItem={currentItem}/>
                   )}
 
                 </LightBox>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GoogleShoppingPricesStatisticsBox from './GoogleShoppingPricesStatisticsBox';
 import EbaySoldPricesStatisticsBox from './EbaySoldPricesStatisticsBox';
 import AmazonPricingComponent from './AmazonPricingComponent';
@@ -7,7 +7,7 @@ import CatalogItemHeader from './CatalogItemHeader';
 
 
 
-const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData}) => {
+const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData, selectedUpc}) => {
   
   const [filterCondition, setFilterCondition] = useState(null);
 
@@ -23,6 +23,10 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
   const handleFilter = (condition) => {
       setFilterCondition(condition);
   };
+
+
+
+
 
   const filteredItems = filterCondition === null
       ? catalogItem.relatedItems
