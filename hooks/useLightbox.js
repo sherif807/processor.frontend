@@ -15,6 +15,8 @@ const useLightbox = (resetInputTitle) => {
     if (lightboxVisible) {
       document.addEventListener('mousedown', handleClickOutside);
     }
+    
+
 
     return () => {
       if (lightboxVisible) {
@@ -25,9 +27,13 @@ const useLightbox = (resetInputTitle) => {
 
 
 
+
+
   const openLightbox = () => {
     setLightboxVisible(true);
     document.body.style.overflow = 'hidden';
+    
+    
   };
 
   const closeLightbox = () => {
@@ -36,24 +42,12 @@ const useLightbox = (resetInputTitle) => {
     document.body.style.overflow = '';
   };
 
-  const toggleImageSelection = (imageLink) => {
-    setSelectedImages((prevSelectedImages) => {
-      if (prevSelectedImages.includes(imageLink)) {
-        return prevSelectedImages.filter((img) => img !== imageLink);
-      } else {
-        return [...prevSelectedImages, imageLink];
-      }
-    });
-  };
-
 
 
   return {
     lightboxVisible,
-    // inputTitle,
-    // setInputTitle,
     selectedImages,
-    toggleImageSelection,
+    closeLightbox,
     openLightbox,
     lightboxRef
   };

@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* @layer base {
+  h1 {
+    @apply text-6xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+} */
+
 
 html,
 body {
@@ -24,7 +33,7 @@ a {
 .image-hover-large {
   position: fixed; /* Use fixed positioning to place relative to the viewport */
   z-index: 50; /* Ensure it's above other content */
-  transform: scale(2); /* Scale up the image 4 times */
+  transform: scale(3); /* Scale up the image 4 times */
   transform-origin: right center; /* Position the transform origin */
   display: none;
   top: 50%; /* Center vertically */
@@ -64,4 +73,15 @@ a {
 
   /* Hide scrollbar for IE, Edge */
   -ms-overflow-style: none;
+}
+
+
+/* Add this to your global CSS file or a relevant stylesheet */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* For WebKit (Safari, Chrome, etc.) */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
 }

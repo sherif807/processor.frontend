@@ -5,12 +5,13 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
     // Include any other paths where you use Tailwind classes
   ],
-  darkMode: false, // or 'media' or 'class'
+  media: false, // or 'media' or 'class'
   theme: {
     extend: {},
   },
   plugins: [
     require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
   ],
 }
 

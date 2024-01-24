@@ -1,7 +1,8 @@
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import {
-    Bars3Icon,
+    CheckCircleIcon,
+    BeakerIcon,
     BellIcon,
     CalendarIcon,
     ChartPieIcon,
@@ -16,7 +17,10 @@ import {
 
 const navigation = [
     { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-    { name: 'Catalog', href: '#', icon: UsersIcon, current: false },
+    { name: 'Unlisted', href: '#', icon: BeakerIcon, current: false },
+    { name: 'Listed', href: '#', icon: CheckCircleIcon, current: false },
+    { name: 'Out of stock', href: '#', icon: ChartPieIcon, current: false },
+    { name: 'Capture', href: '#', icon: FolderIcon, current: false },
     // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
     // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
     // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
@@ -29,11 +33,31 @@ const navigation = [
     { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
   ]
 
-export default function Sidebar({sidebarOpen, setSidebarOpen}) {
+export default function Sidebar({sidebarOpen, setSidebarOpen, setChecked, setOutOfStockFlag, setCurrentPage}) {
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ')
       }
+
+
+      const handleMenuClick = (itemName) => {
+        // Logic to determine the checked value based on the item name
+        if (itemName === 'Listed') {
+            setChecked(1);
+        } else if (itemName === 'Unlisted' || itemName === 'Dashboard') {
+            setChecked(0);
+        } else if (itemName === 'Out of stock') {
+            setOutOfStockFlag(true);
+        }
+
+
+        if (itemName === 'Capture') {
+          setCurrentPage('capture');
+        } else {
+          setCurrentPage('main');
+        }
+    };
+
 
   return (
     <>
@@ -89,12 +113,13 @@ export default function Sidebar({sidebarOpen, setSidebarOpen}) {
               </div>
               <nav className="flex flex-1 flex-col">
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                  <li>
+                <li>
                     <ul role="list" className="-mx-2 space-y-1">
                       {navigation.map((item) => (
                         <li key={item.name}>
                           <a
                             href={item.href}
+                            onClick={() => handleMenuClick(item.name)}
                             className={classNames(
                               item.current
                                 ? 'bg-gray-800 text-white'
@@ -169,6 +194,7 @@ export default function Sidebar({sidebarOpen, setSidebarOpen}) {
                       <li key={item.name}>
                         <a
                           href={item.href}
+                          onClick={() => handleMenuClick(item.name)}
                           className={classNames(
                             item.current
                               ? 'bg-gray-800 text-white'

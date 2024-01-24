@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useState} from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import {
     Bars3Icon,
@@ -12,10 +12,21 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
     { name: 'Sign out', href: '#' },
   ]
 
-export default function TopNavbar({setSidebarOpen}){
+export default function TopNavbar({setSidebarOpen, onSearchSubmit }){
 
 
-      
+  const [searchQuery, setSearchQuery] = useState('');
+
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    onSearchSubmit(searchQuery);
+  };
+
 
     return (
         <>
@@ -29,7 +40,7 @@ export default function TopNavbar({setSidebarOpen}){
             <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <form className="relative flex flex-1" action="#" method="GET">
+              <form className="relative flex flex-1"  method="GET" onSubmit={handleSearchSubmit}>
                 <label htmlFor="search-field" className="sr-only">
                   Search
                 </label>
@@ -43,6 +54,8 @@ export default function TopNavbar({setSidebarOpen}){
                   placeholder="Search..."
                   type="search"
                   name="search"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                 />
               </form>
               <div className="flex items-center gap-x-4 lg:gap-x-6">

@@ -1,45 +1,25 @@
 import { useState } from 'react';
 
-const useRefreshRelatedItems = (setData) => {
+const useRefreshRelatedItems = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchUpdatedCatalogItem = async (catalogItemId) => {
-    try {
-      const response = await fetch(`https://localhost:8000/api/catalog_items/${catalogItemId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const updatedCatalogItem = await response.json();
-      setData((prevData) => {
-        return {
-          ...prevData,
-          'hydra:member': prevData['hydra:member'].map((item) =>
-            item.id === catalogItemId ? updatedCatalogItem : item
-          ),
-        };
-      });
-    } catch (error) {
-      console.error('Error fetching updated catalog item:', error);
-    }
-  };
-
-  const refreshRelatedItems = async (catalogItemId) => {
+  const refreshRelatedItems = async (catalogItemId, updateCatalogItem, condition) => {
     setIsRefreshing(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
-      const response = await fetch(`https://localhost:8000/api/get-latest-listings`, {
+      const response = await fetch(`${apiUrl}/api/get-latest-listings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(catalogItemId)
+        body: JSON.stringify({ catalogItemId, condition })
       });
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
 
-      const result = await response.json();
-      if (result === 'success') {
-        await fetchUpdatedCatalogItem(catalogItemId);
-      }
+      const updatedCatalogItem = await response.json();
+      updateCatalogItem(catalogItemId, { relatedItems: updatedCatalogItem.relatedItems });
+        
     } catch (error) {
       console.error('Error:', error);
     } finally {
