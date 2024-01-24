@@ -38,6 +38,18 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
     const handleGetPricingData = async () => {
         await getHistoricalPrices(catalogItem);
     }
+
+
+    const fetchUpcData = async () => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        try {
+            const response = await fetch(`${apiUrl}/api/get-upc`);
+            const upcData = await response.json();
+            console.log(upcData);
+        } catch (error) {
+            console.error('Error fetching UPC data:', error);
+        }
+    };
   
     return(
       <div className="flex items-center space-x-3">
@@ -121,12 +133,12 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
 
             <div>
 
-            {
-                // Check if extraSpecs exists and if extraSpecs.UPC is not defined
-                // (!catalogItem.extraSpecs || !catalogItem.extraSpecs.UPC) ? (
-                    <button className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" >Update UPC</button>
-                // ) : null
-            }
+            <button 
+                className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
+                onClick={fetchUpcData} 
+            >
+                Update UPC
+            </button>
 
             </div>
 
