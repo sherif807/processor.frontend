@@ -77,10 +77,9 @@ export default function MainContent({ data }) {
       
       // Use catalogItem.images if available
       if (catalogItem.images && catalogItem.images.length > 0) {
-        setImageResults(catalogItem.images.map(url => ({ link: url })));
+        setImageResults(catalogItem.images.map(url => ({ link: url, thumbnail: url })));
       } else {
-        // Fallback to getImages API call
-        getImages(catalogItem);
+        setImageResults(catalogItem.imagesData?.collected);
       }
 
       setLightboxContent('product');
