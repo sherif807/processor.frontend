@@ -127,6 +127,17 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
                 )}
             </div>
 
+
+
+            {!showUpdateUpcButton && (
+                <button 
+                    className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
+                    onClick={() => fetchUpcData(catalogItem)} 
+                >
+                    Update UPC
+                </button>
+            )}
+
             <div>
                 {catalogItem.checked === 1 ? (
                     <button onClick={() => markCatalogItemChecked(catalogItem.id,0)} className="rounded-full  text-white px-4 py-1 text-sm bg-green-500">Mark Undone</button>
@@ -141,14 +152,7 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
 
             <div>
 
-            {!showUpdateUpcButton && (
-                <button 
-                    className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
-                    onClick={() => fetchUpcData(catalogItem)} 
-                >
-                    Update UPC
-                </button>
-            )}
+
 
             </div>
 
