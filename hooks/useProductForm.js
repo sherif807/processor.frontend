@@ -15,6 +15,30 @@ const useProductForm = () => {
 
 
 
+  const matchAmazon = async (catalogItem, updateCatalogItem) => {
+    setIsLoading(true);
+    setError(null);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+        const response = await fetch(`${apiUrl}/api/match-amazon-asins`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(catalogItem.id)
+        });
+
+        const updatedCatalogItem = await response.json();
+        updateCatalogItem(catalogItem.id, updatedCatalogItem);
+  
+    } catch (error) {
+        console.error('Error preparing item:', error);
+        setError(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+  };  
+
+
+
   const prepareItem = async (catalogItem) => {
     setIsLoading(true);
     setError(null);
@@ -317,7 +341,8 @@ const markCatalogItemChecked = async (catalogItemId, updateCatalogItem,removeCat
     markCatalogItemChecked,
     upcData,
     setUpcData,
-    handleUpcChange
+    handleUpcChange, 
+    matchAmazon
   };
 };
 

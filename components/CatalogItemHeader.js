@@ -1,8 +1,10 @@
 import { useEffect,useState, useRef } from 'react';
 import { ArrowsPointingOutIcon, ArrowPathIcon,LockClosedIcon } from '@heroicons/react/20/solid';
 
-const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelatedItems, uniqueConditions, handleFilter, conditionCounts,getHistoricalPrices, prepareItem, updateCatalogItem, isLoading, markCatalogItemChecked, setUpcData, handleOpenLightBoxForUpcData }) => {
+const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelatedItems, uniqueConditions, handleFilter, conditionCounts,getHistoricalPrices, prepareItem, updateCatalogItem, isLoading, markCatalogItemChecked, setUpcData, handleOpenLightBoxForUpcData, matchAmazon }) => {
     const [showConditions, setShowConditions] = useState(false);
+    const [showAsinInput, setShowAsinInput] = useState(false);
+    const [asin, setAsin] = useState('');
     const conditions = ["All", "Pre-Owned", "Refurbished", "New"];
     const showUpdateUpcButton = catalogItem.extraSpecs && 'UPC' in catalogItem.extraSpecs;
 
@@ -37,6 +39,10 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
         updateCatalogItem(catalogItem.id, { status: 9 });
       };
 
+    const handleAmazonMatchClick = async () => {
+        await matchAmazon();
+    };
+
     const handleGetPricingData = async () => {
         await getHistoricalPrices(catalogItem);
     }
@@ -55,7 +61,25 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
             setUpcData(upcData);
             handleOpenLightBoxForUpcData(catalogItem);
         } catch (error) {
-            console.error('Error fetching UPC data:', error);
+            console.error('Error adding manual ASIN:', error);
+        }
+    };
+
+
+    
+    const addManualAsin = async (selectedCatalogItem) => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        try {
+            const response = await fetch(`${apiUrl}/api/add-manual-asin`,{
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ catalogItemId: selectedCatalogItem.id, asin: asin })
+            
+            });
+            const catalogItem = await response.json();
+            updateCatalogItem(catalogItem.id, { amazon_properties: catalogItem.amazon_properties });
+        } catch (error) {
+            console.error('Error fetching manual asin data:', error);
         }
     };
   
@@ -99,7 +123,7 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
                       All ({catalogItem.relatedItems.length})
               </button> */}
               {uniqueConditions.map(condition => (
-                  <button key={condition} onClick={() => handleFilter(condition)} className="rounded-full bg-indigo-600  text-white px-4 py-1 text-sm">
+                  <button key={condition} onClick={() => handleFilter(condition)} className="rounded-full bg-sky-600  text-white px-4 py-1 text-sm">
                       {condition} ({conditionCounts[condition]})
                   </button>
               ))}
@@ -107,7 +131,7 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
   
               <button 
                   onClick={handleGetPricingData} 
-                  className="rounded-full bg-red-500 text-white px-4 py-1 text-sm ml-4"
+                  className="rounded-full bg-sky-600 text-white px-4 py-1 text-sm ml-4"
               >
                   Get Prices
               </button>
@@ -116,7 +140,7 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
                 {catalogItem.status === 9 ? (
                     <button className="rounded-full bg-gray-500 text-white px-4 py-1 text-sm" disabled>Preparing</button>
                 ) : catalogItem.status === 10 ? (
-                    <button onClick={handlePrepareClick} className="rounded-full bg-green-500 text-white px-4 py-1 text-sm">Generated</button>
+                    <button onClick={handlePrepareClick} className="rounded-full bg-sky-600 text-white px-4 py-1 text-sm">Generated</button>
                 ) : catalogItem.status === 1 ? (
                     <button className="rounded-full bg-green-500 text-white px-4 py-1 text-sm" disabled>Ready to List</button>
                 ): catalogItem.status === 2 ? (
@@ -124,19 +148,49 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
                 )
                  : (
                     <button onClick={handlePrepareClick} className="rounded-full bg-red-500 text-white px-4 py-1 text-sm">Prepare</button>
-                )}
+                ) }
+            </div>
+
+            <div>
+                <button onClick={handleAmazonMatchClick} className="rounded-full bg-sky-600 text-white px-4 py-1 text-sm">Match Amazon</button>
             </div>
 
 
-
+{/* 
             {!showUpdateUpcButton && (
                 <button 
-                    className="rounded-full bg-blue-500 text-white px-4 py-1 text-sm" 
+                    className="rounded-full bg-sky-600 text-white px-4 py-1 text-sm" 
                     onClick={() => fetchUpcData(catalogItem)} 
                 >
                     Update UPC
                 </button>
-            )}
+            )} */}
+
+            {showAsinInput ? (
+                            <div>
+                                <input
+                                    type="text"
+                                    value={asin}
+                                    onChange={(e) => setAsin(e.target.value)}
+                                    placeholder="Enter ASIN"
+                                    className="rounded border-gray-300 p-2"
+                                />
+                                <button
+                                    onClick={() => addManualAsin(catalogItem)}
+                                    className="rounded-full bg-sky-600 text-white px-4 py-1 text-sm ml-2"
+                                >
+                                    Submit ASIN
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                className="rounded-full bg-sky-600 text-white px-4 py-1 text-sm"
+                                onClick={() => setShowAsinInput(true)}
+                            >
+                                Add Asin
+                            </button>
+                        )}
+
 
             <div>
                 {catalogItem.checked === 1 ? (

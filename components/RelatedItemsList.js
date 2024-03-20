@@ -7,11 +7,11 @@ const RelatedItemsList = ({ catalogItem,updateRelatedItem, displayedItems, showM
 
     return (
         <div className="ml-6 mr-4">
-            {catalogItem.relatedItems.slice(0, displayedItems[catalogItem.id] || initialItems).map(relatedItem => (
+            {catalogItem.relatedItems?.slice(0, displayedItems[catalogItem.id] || initialItems).map(relatedItem => (
                 <RelatedItem key={relatedItem.id} relatedItem={relatedItem} listProduct={listProduct} catalogItem={catalogItem} updateRelatedItem={updateRelatedItem} getEbayDescription ={getEbayDescription} selectedAsin={selectedAsin} listAmazonProduct={listAmazonProduct}/>
             ))}
             
-            {catalogItem.relatedItems.length > initialItems && (
+            {catalogItem.relatedItems?.length > initialItems && (
                 <div className="mt-2 flex items-center space-x-2">
                     {displayedItems[catalogItem.id] && displayedItems[catalogItem.id] < catalogItem.relatedItems.length && (
                         <button onClick={() => showMoreItems(catalogItem.id)} className="text-indigo-600 hover:text-indigo-800">

@@ -7,7 +7,7 @@ import CatalogItemHeader from './CatalogItemHeader';
 
 
 
-const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData, selectedUpc}) => {
+const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData, selectedUpc, matchAmazon}) => {
   
   const [filterCondition, setFilterCondition] = useState(null);
 
@@ -31,17 +31,17 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
   const filteredItems = filterCondition === null
       ? catalogItem.relatedItems
       : filterCondition === 'Refurbished'
-          ? catalogItem.relatedItems.filter(item => isRefurbishedCondition(item.readableItemCondition))
-          : catalogItem.relatedItems.filter(item => item.readableItemCondition === filterCondition);
+          ? catalogItem.relatedItems?.filter(item => isRefurbishedCondition(item.readableItemCondition))
+          : catalogItem.relatedItems?.filter(item => item.readableItemCondition === filterCondition);
 
   
   
-          const uniqueConditions = [...new Set(catalogItem.relatedItems.map(item => 
+          const uniqueConditions = [...new Set(catalogItem.relatedItems?.map(item => 
             isRefurbishedCondition(item.readableItemCondition) ? 'Refurbished' : item.readableItemCondition
         ))].filter((condition, index, self) => self.indexOf(condition) === index); // Remove duplicates
         
 
-        const conditionCounts = catalogItem.relatedItems.reduce((acc, item) => {
+        const conditionCounts = catalogItem.relatedItems?.reduce((acc, item) => {
           const condition = isRefurbishedCondition(item.readableItemCondition) ? 'Refurbished' : item.readableItemCondition;
           acc[condition] = (acc[condition] || 0) + 1;
           return acc;
@@ -70,6 +70,7 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
             markCatalogItemChecked={markCatalogItemChecked}
             handleOpenLightBoxForUpcData={handleOpenLightBoxForUpcData}
             setUpcData={setUpcData}
+            matchAmazon={matchAmazon}
           />
           <div className="flex">
             <div className="w-1/2">
@@ -86,13 +87,13 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
               />
             </div>
               <div className="flex w-1/2">
-                <div className="w-1/2">
+                {/* <div className="w-1/2">
                   {catalogItem.prices && <GoogleShoppingPricesStatisticsBox  pricingData={catalogItem.prices} handleOpenLightBoxForGoogle={handleOpenLightBoxForGoogle}/>}
                   
-                </div>
-                {/* <div className="w-1/2">
-                  {catalogItem.amazonProperties && <AmazonPricingComponent amazonProperties={catalogItem.amazonProperties} onProductSelect={handleProductSelect}/>}
-                </div>                 */}
+                </div> */}
+                <div className="w-1/2">
+                  {catalogItem.amazonProperties && <AmazonPricingComponent amazonProperties={catalogItem.amazonProperties} amazonPricing={catalogItem.amazonPricing} onProductSelect={handleProductSelect}/>}
+                </div>                
                 <div className="w-1/2">
                 {catalogItem.prices && <EbaySoldPricesStatisticsBox pricingData={catalogItem.prices}/>}
                 </div>

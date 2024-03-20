@@ -19,7 +19,7 @@ export default function MainContent({ data }) {
     const [catalogItems, setCatalogItems] = useState(data);
     const { displayedItems, showMoreItems, showLessItems } = useDisplayedItems(data);
     const { isRefreshing, refreshRelatedItems} = useRefreshRelatedItems();    
-    const { inputTitle, setInputTitle, resetInputTitle, isLoading, error, generateTitle, currentItem, setCurrentItem, imageResults, setImageResults, getImages, handleSubmit, selectedImages, setSelectedImages,  toggleImageSelection, getHistoricalPrices, setPricingData, pricingData, listProduct ,getBestDescription, description, setDescription, prepareItem, getEbayDescription, ebayDescription, markCatalogItemChecked, upcData, setUpcData, handleUpcChange } = useProductForm();    
+    const { inputTitle, setInputTitle, resetInputTitle, isLoading, error, generateTitle, currentItem, setCurrentItem, imageResults, setImageResults, getImages, handleSubmit, selectedImages, setSelectedImages,  toggleImageSelection, getHistoricalPrices, setPricingData, pricingData, listProduct ,getBestDescription, description, setDescription, prepareItem, getEbayDescription, ebayDescription, markCatalogItemChecked, upcData, setUpcData, handleUpcChange, matchAmazon } = useProductForm();    
     const { listAmazonProduct } = useAmazon();
     const {lightboxVisible, openLightbox, closeLightbox, lightboxRef} = useLightbox(resetInputTitle); 
     const [lightboxContent, setLightboxContent] = useState(null);
@@ -38,7 +38,7 @@ export default function MainContent({ data }) {
       setCatalogItems((prevCatalogItems) => {
         return prevCatalogItems.map(catalogItem => {
           if (catalogItem.id === catalogItemId) {
-            return { ...catalogItem, ...updatedData };
+            return { ...catalogItem, ...updatedData, relatedItems: updatedData.relatedItems };
           }
           return catalogItem;
         });
@@ -158,6 +158,7 @@ export default function MainContent({ data }) {
                 pricingData={pricingData}
                 listProduct={listProduct}
                 prepareItem={() => prepareItem(catalogItem)}
+                matchAmazon= {() => matchAmazon(catalogItem, updateCatalogItem)}
                 getEbayDescription={(relatedItemId) => handleOpenLightboxForEbayDescription(relatedItemId)}
                 handleOpenLightBoxForGoogle= {(pricingData) => handleOpenLightboxForGoogleData(pricingData)}
                 isLoading={isLoading}

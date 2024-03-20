@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [totalItems, setTotalItems] = useState(0);
   const [scrollDirection, setScrollDirection] = useState('down');
   const [checked, setChecked] = useState(0);
+  const [liveSearchFlag, setLiveSearchFlag] = useState(true);
   const [outOfStockFlag, setOutOfStockFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState('main');
   

@@ -6,8 +6,7 @@ const useAmazon = () => {
     // setIsLoading(true);
     // setError(null);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    asinDescription = {};
+    console.log(asinDescription)
   
   
     try {
