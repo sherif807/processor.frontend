@@ -19,7 +19,7 @@ export default function MainContent({ data }) {
     const [catalogItems, setCatalogItems] = useState(data);
     const { displayedItems, showMoreItems, showLessItems } = useDisplayedItems(data);
     const { isRefreshing, refreshRelatedItems} = useRefreshRelatedItems();    
-    const { inputTitle, setInputTitle, resetInputTitle, isLoading, error, generateTitle, currentItem, setCurrentItem, imageResults, setImageResults, getImages, handleSubmit, selectedImages, setSelectedImages,  toggleImageSelection, getHistoricalPrices, setPricingData, pricingData, listProduct ,getBestDescription, description, setDescription, prepareItem, getEbayDescription, ebayDescription, markCatalogItemChecked, upcData, setUpcData, handleUpcChange, matchAmazon } = useProductForm();    
+    const { inputTitle, setInputTitle, resetInputTitle, isLoading, error, generateTitle, currentItem, setCurrentItem, imageResults, setImageResults, getImages, handleSubmit, selectedImages, setSelectedImages,  toggleImageSelection, getHistoricalPrices, setPricingData, pricingData, listProduct ,listFacebookProduct, getBestDescription, description, setDescription, prepareItem, getEbayDescription, ebayDescription, markCatalogItemChecked, upcData, setUpcData, handleUpcChange, matchAmazon } = useProductForm();    
     const { listAmazonProduct } = useAmazon();
     const {lightboxVisible, openLightbox, closeLightbox, lightboxRef} = useLightbox(resetInputTitle); 
     const [lightboxContent, setLightboxContent] = useState(null);
@@ -63,7 +63,21 @@ export default function MainContent({ data }) {
       });
     };
     
-    
+    const updateFacebookItem = (catalogItemId, facebookItemId, updatedData) => {
+      setCatalogItems((prevCatalogItems) => {
+        return prevCatalogItems.map(catalogItem => {
+          if (catalogItem.id === catalogItemId) {
+            return {
+              ...catalogItem,
+              facebookItems: catalogItem.facebookItems.map(item =>
+                item.id === facebookItemId ? { ...item, ...updatedData } : item
+              )
+            };
+          }
+          return catalogItem;
+        });
+      });
+    };
 
 
   
@@ -146,6 +160,7 @@ export default function MainContent({ data }) {
                 key={catalogItem.id}
                 catalogItem={catalogItem}
                 updateRelatedItem={updateRelatedItem}
+                updateFacebookItem={updateFacebookItem}
                 updateCatalogItem={updateCatalogItem}
                 showMoreItems={showMoreItems}
                 showLessItems={showLessItems}
@@ -157,6 +172,7 @@ export default function MainContent({ data }) {
                 getHistoricalPrices={getHistoricalPrices}
                 pricingData={pricingData}
                 listProduct={listProduct}
+                listFacebookProduct = {listFacebookProduct}
                 prepareItem={() => prepareItem(catalogItem)}
                 matchAmazon= {() => matchAmazon(catalogItem, updateCatalogItem)}
                 getEbayDescription={(relatedItemId) => handleOpenLightboxForEbayDescription(relatedItemId)}

@@ -85,9 +85,10 @@ const CatalogItemHeader = ({ catalogItem, handleOpenLightBox, handleRefreshRelat
   
     return(
       <div className="flex items-center space-x-3">
-          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gray-200 text-xl font-semibold text-gray-700">
-              {catalogItem.id}
+          <span className="inline-flex items-center justify-center h-12  text-xl font-semibold text-gray-700">
+              {catalogItem.searchString}
           </span>
+          {/* <div>{catalogItem.id}</div> */}
           <span className="text-2xl font-bold uppercase">{catalogItem.brand} {catalogItem.model}</span>
           <div onClick={handleOpenLightBox} className="ml-4 cursor-pointer">
               <ArrowsPointingOutIcon className="h-5 w-5 text-indigo-600 hover:text-indigo-700" />

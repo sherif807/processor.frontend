@@ -4,10 +4,11 @@ import EbaySoldPricesStatisticsBox from './EbaySoldPricesStatisticsBox';
 import AmazonPricingComponent from './AmazonPricingComponent';
 import RelatedItemsList from './RelatedItemsList';
 import CatalogItemHeader from './CatalogItemHeader';
+import FacebookItemList from './FacebookItemsList';
 
 
 
-const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData, selectedUpc, matchAmazon}) => {
+const CatalogItem = ({ catalogItem,updateRelatedItem,updateFacebookItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct,listFacebookProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData, selectedUpc, matchAmazon}) => {
   
   const [filterCondition, setFilterCondition] = useState(null);
 
@@ -73,7 +74,7 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
             matchAmazon={matchAmazon}
           />
           <div className="flex">
-            <div className="w-1/2">
+            {/* <div className="w-1/2">
               <RelatedItemsList
                 catalogItem={{ ...catalogItem, relatedItems: filteredItems }}
                 updateRelatedItem={updateRelatedItem}
@@ -85,12 +86,25 @@ const CatalogItem = ({ catalogItem,updateRelatedItem, updateCatalogItem, showMor
                 selectedAsin={selectedAsin}
                 listAmazonProduct={listAmazonProduct}
               />
+            </div> */}
+            <div className="w-1/2">
+              <FacebookItemList
+                catalogItem={{ ...catalogItem, relatedItems: filteredItems }}
+                updateFacebookItem={updateFacebookItem}
+                displayedItems={displayedItems}
+                showMoreItems={showMoreItems}
+                showLessItems={showLessItems}
+                listFacebookProduct={listFacebookProduct}
+                getEbayDescription={getEbayDescription}
+                selectedAsin={selectedAsin}
+                listAmazonProduct={listAmazonProduct}
+              />
             </div>
               <div className="flex w-1/2">
-                {/* <div className="w-1/2">
+                <div className="w-1/2">
                   {catalogItem.prices && <GoogleShoppingPricesStatisticsBox  pricingData={catalogItem.prices} handleOpenLightBoxForGoogle={handleOpenLightBoxForGoogle}/>}
                   
-                </div> */}
+                </div>
                 <div className="w-1/2">
                   {catalogItem.amazonProperties && <AmazonPricingComponent amazonProperties={catalogItem.amazonProperties} amazonPricing={catalogItem.amazonPricing} onProductSelect={handleProductSelect}/>}
                 </div>                

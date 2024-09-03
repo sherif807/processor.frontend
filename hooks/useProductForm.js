@@ -140,7 +140,7 @@ const useProductForm = () => {
     setIsLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
-      const query = `${catalogItem.brand} ${catalogItem.model}`;
+      const query = `${catalogItem.searchString}`;
       const response = await fetch(`${apiUrl}/api/google-images`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -182,6 +182,33 @@ const useProductForm = () => {
     } finally {
         setIsLoading(false);
     }
+};
+
+const listFacebookProduct = async (catalogItem, facebookItemId,updateFacebookItem, sellingPrice, newListingStatus, smallDescription, itemCondition) => {
+  setIsLoading(true);
+  setError(null);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
+  try {
+      const response = await fetch(`${apiUrl}/api/list-on-hitbundle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({facebookItemId, sellingPrice, newListingStatus, smallDescription, itemCondition })
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const updatedItem  = await response.json();
+      // updateRelatedItem(catalogItem.id, facebookItemId, { listingStatus: updatedItem.listingStatus, sellingPrice: updatedItem.sellingPrice  });
+      updateFacebookItem(catalogItem.id, facebookItemId, { listingStatus: updatedItem.listingStatus, sellingPrice: updatedItem.sellingPrice  });
+
+  } catch (error) {
+      console.error('Error listing product:', error);
+      setError(error.message);
+  } finally {
+      setIsLoading(false);
+  }
 };
 
 
@@ -332,6 +359,7 @@ const markCatalogItemChecked = async (catalogItemId, updateCatalogItem,removeCat
     setPricingData,
     pricingData,
     listProduct,
+    listFacebookProduct,
     getBestDescription,
     setDescription,
     description,

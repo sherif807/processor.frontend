@@ -3,7 +3,10 @@ import Sidebar from '../components/Sidebar';
 import TopNavbar from '../components/TopNavbar';
 import MainContent from '../components/MainContent';
 import Pagination from '../components/Pagination';
-import CaptureComponent from '../components/CaptureComponent'; // Import the new component
+import CaptureComponent from '../components/CaptureComponent'; 
+import PictureUploadComponent from '../components/PictureUploadComponent';
+import PictureGridComponent from '../components/PictureGridComponent'; 
+
 
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
@@ -14,12 +17,10 @@ export default function Dashboard() {
   const [listingPage, setListingPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [scrollDirection, setScrollDirection] = useState('down');
-  const [checked, setChecked] = useState(0);
+  const [checked, setChecked] = useState(3);
   const [liveSearchFlag, setLiveSearchFlag] = useState(true);
   const [outOfStockFlag, setOutOfStockFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState('main');
-  
-  
 
   const capture = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -36,21 +37,47 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }
-  
+  };
 
-  const fetchData = async ({page =1}) => {
+
+  const uploadPicture = async (file) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
     try {
-      const response = await fetch(`${apiUrl}/api/catalog_items?page=${page}&checked=${checked}`);
+      const response = await fetch(`${apiUrl}/api/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const jsonData = await response.json();
-      setData(jsonData['hydra:member']);
-      // console.log(jsonData);
-      setTotalItems(jsonData['hydra:totalItems']);
+      console.log(jsonData);
+    } catch (error) {
+      console.error('Upload error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  const fetchData = async ({page = 1}) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    setLoading(true);
+    try {
+      // const response = await fetch(`${apiUrl}/api/catalog_items?page=${page}&checked=${checked}`);
+      const response = await fetch(`${apiUrl}/api/get-pending-pictures`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const jsonData = await response.json();
+      console.log(jsonData);
+      setData(jsonData);
+      setTotalItems(jsonData.length);
     } catch (error) {
       console.error('Fetch error:', error);
     } finally {
@@ -58,8 +85,7 @@ export default function Dashboard() {
     }
   };
 
-
-  const fetchOutOfStock = async ({page =1}) => {
+  const fetchOutOfStock = async ({page = 1}) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     setLoading(true);
     try {
@@ -76,31 +102,28 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     setListingPage(1);
     fetchData({page: 1});
   }, [checked]);
-  
 
   useEffect(() => {
-    if(outOfStockFlag){
+    if (outOfStockFlag) {
       setListingPage(1);
       fetchOutOfStock({page: 1});
     }
-  }, [outOfStockFlag]);  
+  }, [outOfStockFlag]);
 
   useEffect(() => {
-    console.log(listingPage)
-    if (listingPage !== 1) {
+    if (currentPage === 'facebook') {
+    } else {
       fetchData({page: listingPage});
     }
-  }, [listingPage]); // Refetch when currentPage changes
-
-  
+  }, [currentPage, listingPage]);
 
   const handlePageChange = (newPage) => {
-    setListingPage(newPage); // Update the current page
+    setListingPage(newPage);
   };
 
   const handleScroll = () => {
@@ -113,56 +136,51 @@ export default function Dashboard() {
     }
   };
 
-
   const handleSearchSubmit = async (query) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
       const response = await fetch(`${apiUrl}/api/search`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: query })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
       });
       if (!response.ok) {
-          throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok');
       }
       const jsonData = await response.json();
-      console.log(jsonData);
       setData(jsonData['hydra:member']);
-  } catch (error) {
+    } catch (error) {
       console.error('Error fetching description:', error);
-  }
-    // const response = await fetch(`/api/search?query=${query}`);
-    // const result = await response.json();
+    }
   };
-
 
   return (
     <>
       <div>
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} setChecked={setChecked} setOutOfStockFlag={setOutOfStockFlag} setCurrentPage={setCurrentPage}/>
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} setChecked={setChecked} setOutOfStockFlag={setOutOfStockFlag} setCurrentPage={setCurrentPage} />
         <div className="lg:pl-72">
           <TopNavbar setSidebarOpen={setSidebarOpen} onSearchSubmit={handleSearchSubmit} />
-          {/* {loading ? <p>Loading...</p> : <MainContent data={data} setData={setData} />} */}
+          {loading ? <p>Loading...</p> : (
+            <>
+              {/* {currentPage === 'main' && <MainContent data={data} />} */}
+              {currentPage === 'main' && <PictureGridComponent/> }
+              {currentPage === 'capture' && <CaptureComponent capture={capture} />}
+              {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} />} {/* New Picture page */}
 
-
-            {currentPage === 'main' && <MainContent data={data} />}
-            {currentPage === 'capture' && <CaptureComponent capture={capture}/>}
-
-
-
-
-          <Pagination 
+            </>
+          )}
+          <Pagination
             currentPage={listingPage}
             totalItems={totalItems}
             onPageChange={handlePageChange}
           />
         </div>
-        <button 
-          onClick={handleScroll} 
+        <button
+          onClick={handleScroll}
           className="fixed bottom-11 mb-8 right-5 z-50 flex h-10 w-10 items-center justify-center rounded bg-indigo-500 text-white shadow-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
         >
-          {scrollDirection === 'down' ? 
-            <ChevronDownIcon className="h-5 w-5" /> : 
+          {scrollDirection === 'down' ?
+            <ChevronDownIcon className="h-5 w-5" /> :
             <ChevronUpIcon className="h-5 w-5" />
           }
         </button>

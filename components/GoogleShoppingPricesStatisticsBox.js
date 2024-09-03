@@ -4,7 +4,6 @@ const GoogleShoppingPricesStatisticsBox = ({ handleOpenLightBoxForGoogle, pricin
   const generalStats = pricingData.summary?.googleSummary.statistics;
   const conditionsStats = pricingData.summary?.googleSummary.conditions;
 
-
   return (
     <div className="bg-gray-100 p-3 mb-2 sticky top-0">
       <h4 className="text-lg font-bold mb-1">Google</h4>
@@ -15,7 +14,7 @@ const GoogleShoppingPricesStatisticsBox = ({ handleOpenLightBoxForGoogle, pricin
       </div>
 
       {/* Condition-Specific Statistics */}
-      {Object.keys(conditionsStats).map((condition, index) => {
+      {conditionsStats && Object.keys(conditionsStats).map((condition, index) => {
         const conditionData = conditionsStats[condition];
 
         return (
@@ -28,7 +27,7 @@ const GoogleShoppingPricesStatisticsBox = ({ handleOpenLightBoxForGoogle, pricin
         );
       })}
 
-      <button onClick={() => handleOpenLightBoxForGoogle( pricingData)}>
+      <button onClick={() => handleOpenLightBoxForGoogle(pricingData)}>
         Listings
       </button>
     </div>

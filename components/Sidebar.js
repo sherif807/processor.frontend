@@ -12,20 +12,19 @@ import {
     HomeIcon,
     UsersIcon,
     XMarkIcon,
+    PhotoIcon
   } from '@heroicons/react/24/outline'
 
 
-const navigation = [
+  const navigation = [
     { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
     { name: 'Unlisted', href: '#', icon: BeakerIcon, current: false },
     { name: 'Listed', href: '#', icon: CheckCircleIcon, current: false },
     { name: 'Out of stock', href: '#', icon: ChartPieIcon, current: false },
     { name: 'Capture', href: '#', icon: FolderIcon, current: false },
-    // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-    // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-    // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-    // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
-  ]
+    { name: 'Facebook', href: '#', icon: UsersIcon, current: false },
+    { name: 'Picture', href: '#', icon: PhotoIcon, current: false }
+  ];
 
   const teams = [
     { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
@@ -41,23 +40,24 @@ export default function Sidebar({sidebarOpen, setSidebarOpen, setChecked, setOut
 
 
       const handleMenuClick = (itemName) => {
-        // Logic to determine the checked value based on the item name
         if (itemName === 'Listed') {
-            setChecked(1);
+          setChecked(1);
         } else if (itemName === 'Unlisted' || itemName === 'Dashboard') {
-            setChecked(0);
+          setChecked(0);
         } else if (itemName === 'Out of stock') {
-            setOutOfStockFlag(true);
+          setOutOfStockFlag(true);
         }
-
-
+      
         if (itemName === 'Capture') {
           setCurrentPage('capture');
+        } else if (itemName === 'Facebook') {
+            setCurrentPage('facebook');
+        } else if (itemName === 'Picture') {
+            setCurrentPage('picture'); // Handle Picture page
         } else {
-          setCurrentPage('main');
+            setCurrentPage('main');
         }
-    };
-
+      };
 
   return (
     <>
