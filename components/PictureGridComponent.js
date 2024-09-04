@@ -1,11 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useAbly } from '../hooks/useAbly';
 
 export default function PictureGridComponent({ page, setTotalItems }) {
   const [pictures, setPictures] = useState([]);
   const [loading, setLoading] = useState(false);
+
+
+
+
+  useAbly('signal', (message) => {
+    if (message.name === 'update_signal') {
+      const pictureId = message.data.message;
+      fetchUpdatedPicture(pictureId);
+    }
+  });
+
+
+  const fetchUpdatedPicture = useCallback(async (id) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+      const response = await fetch(`${apiUrl}/api/pictures/${id}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updatedPicture = await response.json();
+
+      setPictures((prevPictures) => {
+        const index = prevPictures.findIndex(p => p['@id'] === updatedPicture['@id']);
+        if (index !== -1) {
+          const newPictures = [...prevPictures];
+          newPictures[index] = updatedPicture;
+          return newPictures;
+        }
+        return [...prevPictures, updatedPicture];
+      });
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  }, []);
+
 
   useEffect(() => {
     const fetchPictures = async () => {
@@ -29,9 +65,15 @@ export default function PictureGridComponent({ page, setTotalItems }) {
     fetchPictures();
   }, [page, setTotalItems]);
 
+  
+
   if (loading) {
     return <p>Loading...</p>;
   }
+
+
+
+
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
@@ -99,8 +141,31 @@ function AnalyticsSlider({ analytics }) {
 
   const conditions = ['new', 'pre-owned'];
 
+  // Helper function to determine initial slide based on analytics data
+  const getInitialCondition = (analytics) => {
+    const numberOfNewItemsSold = analytics?.ebayAnalytics?.completed['new']?.count || 0;
+    const numberOfPreOwnedItemsSold = analytics?.ebayAnalytics?.completed['pre-owned']?.count || 0;
+    const numberOfNewLiveItems = analytics?.ebayAnalytics?.live['new']?.count || 0;
+    const numberOfPreOwnedLiveItems = analytics?.ebayAnalytics?.live['pre-owned']?.count || 0;
+
+    if (numberOfNewItemsSold > numberOfPreOwnedItemsSold) {
+      return 'new';
+    } else if (numberOfPreOwnedItemsSold > numberOfNewItemsSold) {
+      return 'pre-owned';
+    } else {
+      if (numberOfNewLiveItems > numberOfPreOwnedLiveItems) {
+        return 'new';
+      } else {
+        return 'pre-owned';
+      }
+    }
+  };
+
+  const initialCondition = getInitialCondition(analytics);
+  const initialSlideIndex = conditions.indexOf(initialCondition);
+
   return (
-    <Slider {...settings}>
+    <Slider {...settings} initialSlide={initialSlideIndex}>
       {conditions.map((condition) => {
         const completedData = analytics?.ebayAnalytics?.completed[condition];
         const liveData = analytics?.ebayAnalytics?.live[condition];
@@ -113,7 +178,7 @@ function AnalyticsSlider({ analytics }) {
               <p><strong>Competition: </strong> {liveData ? liveData.count : 'N/A'}</p>
               <p><strong>Selling speed: </strong> {completedData ? completedData.salesFrequencyPerWeek.toFixed(2) : 'N/A'} sales/week</p>
               <p><strong>Lowest live price:</strong> {liveData ? `$${liveData.minPrice}` : 'N/A'}</p>
-              <p><strong>Number of unsold listings</strong> {completedData ? completedData.numberOfItemsNotSold : 'N/A'}</p>
+              <p><strong>Number of unsold listings:</strong> {completedData ? completedData.numberOfItemsNotSold : 'N/A'}</p>
               <p><strong>Sold vs unsold %:</strong> {completedData ? `${((completedData.numberOfItemsSold / completedData.numberOfItems) * 100).toFixed(2)}%` : 'N/A'}</p>
               <p><strong>Average Days to sell:</strong> {completedData && completedData.salesFreshness ? `${completedData.salesFreshness.averageDaysToSell.toFixed(2)} days` : 'N/A'}</p>
               <p><strong>Freshness score:</strong> {completedData && completedData.salesFreshness ? `${completedData.salesFreshness.salesFreshnessScore}` : 'N/A'}</p>
