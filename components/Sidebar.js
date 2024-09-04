@@ -57,6 +57,7 @@ export default function Sidebar({sidebarOpen, setSidebarOpen, setChecked, setOut
         } else {
             setCurrentPage('main');
         }
+        setSidebarOpen(false);
       };
 
   return (

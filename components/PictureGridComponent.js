@@ -97,7 +97,7 @@ function AnalyticsSlider({ analytics }) {
     adaptiveHeight: true,
   };
 
-  const conditions = ['Brand New', 'Open Box', 'Pre-Owned'];
+  const conditions = ['new', 'pre-owned'];
 
   return (
     <Slider {...settings}>
