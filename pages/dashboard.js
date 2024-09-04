@@ -22,22 +22,22 @@ export default function Dashboard() {
   const [outOfStockFlag, setOutOfStockFlag] = useState(false);
   const [currentPage, setCurrentPage] = useState('main');
 
-  const capture = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    setLoading(true);
-    try {
-      const response = await fetch(`${apiUrl}/api/capture`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const jsonData = await response.json();
-      console.log(jsonData);
-    } catch (error) {
-      console.error('Fetch error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const capture = async () => {
+  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${apiUrl}/api/capture`);
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
+  //     }
+  //     const jsonData = await response.json();
+  //     console.log(jsonData);
+  //   } catch (error) {
+  //     console.error('Fetch error:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 
   const uploadPicture = async (file) => {
@@ -65,62 +65,61 @@ export default function Dashboard() {
   };
   
 
-  const fetchData = async ({page = 1}) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    setLoading(true);
-    try {
-      // const response = await fetch(`${apiUrl}/api/catalog_items?page=${page}&checked=${checked}`);
-      const response = await fetch(`${apiUrl}/api/get-pending-pictures`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const jsonData = await response.json();
-      console.log(jsonData);
-      setData(jsonData);
-      setTotalItems(jsonData.length);
-    } catch (error) {
-      console.error('Fetch error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchData = async ({ page = 1 }) => {
+  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${apiUrl}/api/pictures?page=${page}`);
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
+  //     }
+  //     const jsonData = await response.json();
+  //     console.log(jsonData);
+  //     setData(jsonData['hydra:member']);
+  //     setTotalItems(jsonData['hydra:totalItems']);
+  //   } catch (error) {
+  //     console.error('Fetch error:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const fetchOutOfStock = async ({page = 1}) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    setLoading(true);
-    try {
-      const response = await fetch(`${apiUrl}/api/catalog_items?page=${page}&outOfStock=1`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const jsonData = await response.json();
-      setData(jsonData['hydra:member']);
-      setTotalItems(jsonData['hydra:totalItems']);
-    } catch (error) {
-      console.error('Fetch error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchOutOfStock = async ({page = 1}) => {
+  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${apiUrl}/api/catalog_items?page=${page}&outOfStock=1`);
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
+  //     }
+  //     const jsonData = await response.json();
+  //     setData(jsonData['hydra:member']);
+  //     setTotalItems(jsonData['hydra:totalItems']);
+  //   } catch (error) {
+  //     console.error('Fetch error:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    setListingPage(1);
-    fetchData({page: 1});
-  }, [checked]);
+  // useEffect(() => {
+  //   setListingPage(1);
+  //   fetchData({page: 1});
+  // }, [checked]);
 
-  useEffect(() => {
-    if (outOfStockFlag) {
-      setListingPage(1);
-      fetchOutOfStock({page: 1});
-    }
-  }, [outOfStockFlag]);
+  // useEffect(() => {
+  //   if (outOfStockFlag) {
+  //     setListingPage(1);
+  //     fetchOutOfStock({page: 1});
+  //   }
+  // }, [outOfStockFlag]);
 
-  useEffect(() => {
-    if (currentPage === 'facebook') {
-    } else {
-      fetchData({page: listingPage});
-    }
-  }, [currentPage, listingPage]);
+  // useEffect(() => {
+  //   if (currentPage === 'facebook') {
+  //   } else {
+  //     fetchData({page: listingPage});
+  //   }
+  // }, [currentPage, listingPage]);
 
   const handlePageChange = (newPage) => {
     setListingPage(newPage);
@@ -163,7 +162,7 @@ export default function Dashboard() {
           {loading ? <p>Loading...</p> : (
             <>
               {/* {currentPage === 'main' && <MainContent data={data} />} */}
-              {currentPage === 'main' && <PictureGridComponent/> }
+              {currentPage === 'main' && <PictureGridComponent page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'capture' && <CaptureComponent capture={capture} />}
               {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} />} {/* New Picture page */}
 

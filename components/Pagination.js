@@ -1,6 +1,7 @@
 export default function Pagination({ currentPage, totalItems, onPageChange }) {
-    const itemsPerPage = 30; // Adjust as needed
+    const itemsPerPage = 10; // Adjust as needed
     const totalPages = Math.ceil(totalItems / itemsPerPage);
+
   
     const handlePrev = () => {
       if (currentPage > 1) onPageChange(currentPage - 1);

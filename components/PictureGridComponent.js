@@ -3,7 +3,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-export default function PictureGridComponent() {
+export default function PictureGridComponent({ page, setTotalItems }) {
   const [pictures, setPictures] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -12,12 +12,13 @@ export default function PictureGridComponent() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
       try {
-        const response = await fetch(`${apiUrl}/api/pictures`);
+        const response = await fetch(`${apiUrl}/api/pictures?page=${page}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
         setPictures(jsonData['hydra:member']);
+        setTotalItems(jsonData['hydra:totalItems']);
       } catch (error) {
         console.error('Fetch error:', error);
       } finally {
@@ -26,7 +27,7 @@ export default function PictureGridComponent() {
     };
 
     fetchPictures();
-  }, []);
+  }, [page, setTotalItems]);
 
   if (loading) {
     return <p>Loading...</p>;
