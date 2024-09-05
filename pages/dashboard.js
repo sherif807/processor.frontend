@@ -6,12 +6,14 @@ import Pagination from '../components/Pagination';
 import CaptureComponent from '../components/CaptureComponent'; 
 import PictureUploadComponent from '../components/PictureUploadComponent';
 import PictureGridComponent from '../components/PictureGridComponent'; 
+import DismissedItemsPage from '../components/DismissedItemsPage';
 
 
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [multipleUploads, setMultipleUploads] = useState(false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [listingPage, setListingPage] = useState(1);
@@ -40,7 +42,7 @@ export default function Dashboard() {
   // };
 
 
-  const uploadPicture = async (file, multipleUploads) => {
+  const uploadPicture = async (file) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     setLoading(true);
     const formData = new FormData();
@@ -57,9 +59,9 @@ export default function Dashboard() {
       }
   
       const jsonData = await response.json();
-      console.log(jsonData);
+      console.log("here2", multipleUploads);
   
-      if (!multipleUploads) {
+      if (multipleUploads !== true) {
         setCurrentPage('main'); // Navigate back to the dashboard
       }
     } catch (error) {
@@ -161,7 +163,15 @@ export default function Dashboard() {
   return (
     <>
       <div>
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} setChecked={setChecked} setOutOfStockFlag={setOutOfStockFlag} setCurrentPage={setCurrentPage} />
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        setChecked={setChecked}
+        setOutOfStockFlag={setOutOfStockFlag}
+        setCurrentPage={setCurrentPage}
+        multipleUploads={multipleUploads}
+        setMultipleUploads={setMultipleUploads}
+      />
         <div className="lg:pl-72">
           <TopNavbar setSidebarOpen={setSidebarOpen} onSearchSubmit={handleSearchSubmit} />
           {loading ? <p>Loading...</p> : (
@@ -169,7 +179,8 @@ export default function Dashboard() {
               {/* {currentPage === 'main' && <MainContent data={data} />} */}
               {currentPage === 'main' && <PictureGridComponent page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'capture' && <CaptureComponent capture={capture} />}
-              {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} />} {/* New Picture page */}
+              {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} setCurrentPage={setCurrentPage}/>} {/* New Picture page */}
+              {currentPage === 'dismissed' && <DismissedItemsPage setTotalItems={setTotalItems} />}
 
             </>
           )}
