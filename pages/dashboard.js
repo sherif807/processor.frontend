@@ -40,23 +40,28 @@ export default function Dashboard() {
   // };
 
 
-  const uploadPicture = async (file) => {
+  const uploadPicture = async (file, multipleUploads) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
-
+  
     try {
       const response = await fetch(`${apiUrl}/api/upload`, {
         method: 'POST',
         body: formData
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
+  
       const jsonData = await response.json();
       console.log(jsonData);
+  
+      if (!multipleUploads) {
+        setCurrentPage('main'); // Navigate back to the dashboard
+      }
     } catch (error) {
       console.error('Upload error:', error);
     } finally {

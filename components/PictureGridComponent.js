@@ -12,7 +12,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
 
 
   useAbly('signal', (message) => {
-    if (message.name === 'update_signal') {
+    if (message.name === 'update') {
       const pictureId = message.data.message;
       fetchUpdatedPicture(pictureId);
     }
