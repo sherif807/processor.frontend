@@ -77,16 +77,16 @@ function SalesDataSectionLive({ livePreOwned,  liveNew }) {
       <div></div> {/* Empty for label column */}
       <div className="font-semibold">Pre-Owned</div>
       <div className="font-semibold">New</div>
+      {/* Labels + Data */}
+      <div className="text-gray-500 font-medium">Average Price</div>
+      <div>{`$${Math.round(livePreOwned?.avgPrice || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.avgPrice || 0)}`}</div>
 
       <div className="text-gray-500 font-medium">Min Price</div>
       <div>{`$${Math.round(livePreOwned?.minPrice || 0)}`}</div>
       <div>{`$${Math.round(liveNew?.minPrice || 0)}`}</div>
 
 
-      {/* Labels + Data */}
-      <div className="text-gray-500 font-medium">Average Price</div>
-      <div>{`$${Math.round(livePreOwned?.avgPrice || 0)}`}</div>
-      <div>{`$${Math.round(liveNew?.avgPrice || 0)}`}</div>
 
 
 
