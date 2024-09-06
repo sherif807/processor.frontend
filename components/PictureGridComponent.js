@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { DataVisualization, GraphsVisualization } from './DataVisualization'; // Importing DataVisualization and GraphsVisualization
+import { CompletedDataAnalytics,LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization'; // Importing DataVisualization and GraphsVisualization
 import { useAbly } from '../hooks/useAbly';
 import { LinkIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Box, Typography } from '@mui/material';
@@ -178,17 +178,18 @@ function AnalyticsSlider({ analytics, item }) {
 
   return (
     <Slider {...settings}>
-      {/* History Slide */}
       <div key="history" className="p-0">
         {/* <Typography variant="h4" gutterBottom>History</Typography> */}
-        <DataVisualization analytics={analytics} />
-        <GraphsVisualization data={item.prices?.ebayCompletedData} />
+        <CompletedDataAnalytics analytics={analytics} />
+        <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} />
       </div>
 
       {/* Live Slide */}
       <div key="live" className="p-0">
-        <Typography variant="h4" gutterBottom>Live Data</Typography>
-        <GraphsVisualization data={item.prices?.ebayLiveData} />
+        <Typography variant="h4" gutterBottom></Typography>
+        <LiveDataAnalytics analytics={analytics} />
+
+        <LiveGraphsVisualization data={item.prices?.ebayLiveData} />
       </div>
     </Slider>
   );

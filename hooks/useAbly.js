@@ -11,23 +11,31 @@ export function useAbly(channelName, callbackOnMessage) {
 
     const ably = ablyRef.current;
 
-    if (ably.connection.state === 'connected' || ably.connection.state === 'connecting') {
+    const handleConnectionStateChange = (stateChange) => {
+      console.log('Connection state changed:', stateChange.current);
+      
+      if (stateChange.current === 'connected') {
+        const channel = ably.channels.get(channelName);
+        channel.subscribe(callbackOnMessage);
+      }
+    };
+
+    // Attach listener for connection state changes
+    ably.connection.on('connectionStateChange', handleConnectionStateChange);
+
+    return () => {
       const channel = ably.channels.get(channelName);
-      channel.subscribe(callbackOnMessage);
+      channel.unsubscribe(callbackOnMessage);
 
-      return () => {
-        channel.unsubscribe(callbackOnMessage);
-
-        try {
-          if (ably.connection.state === 'connected' || ably.connection.state === 'connecting') {
-            ably.close();
-          }
-        } catch (error) {
-          console.error('Error during Ably cleanup:', error);
+      try {
+        if (ably.connection.state === 'connected' || ably.connection.state === 'connecting') {
+          ably.close();
         }
-      };
-    } else {
-      console.error('Ably connection is not active');
-    }
+      } catch (error) {
+        console.error('Error during Ably cleanup:', error);
+      }
+
+      ably.connection.off('connectionStateChange', handleConnectionStateChange);
+    };
   }, [channelName, callbackOnMessage]);
 }
