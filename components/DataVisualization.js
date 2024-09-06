@@ -134,19 +134,21 @@ const formatDate = (dateString) => {
 };
 
 export function CompletedGraphsVisualization({ data = [], title }) {
+  // Format data to include necessary details for each item
   const formatGraphData = (data) =>
-    data.map((item) => ({
-      date: item.date,
-      totalPrice: item.totalPrice || 0, // Total price of the item
-      soldStatus: item.soldStatus, // Sold status (sold/not sold)
-      title: item.title || 'Unknown Title', // Item title
-      price: item.price, // Item price
-      shippingPrice: item.shippingPrice, // Shipping price
-      condition: item.condition, // Condition of the item
-      imageUrl: item.imageUrl || '', // Item image
-      x: item.date, // X-axis position (date)
-      y: item.totalPrice, // Y-axis position (totalPrice)
-    })).reverse();
+    data
+      .map((item) => ({
+        date: item.date,
+        totalPrice: item.totalPrice || 0, // Total price of the item
+        soldStatus: item.soldStatus, // Sold status (sold/not sold)
+        title: item.title || 'Unknown Title', // Item title
+        price: item.price, // Item price
+        shippingPrice: item.shippingPrice, // Shipping price
+        condition: item.condition, // Condition of the item
+        imageUrl: item.imageUrl || '', // Item image
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort data by date
+      .reverse(); // Reverse to show the oldest first
 
   const graphData = formatGraphData(data);
 
@@ -158,8 +160,30 @@ export function CompletedGraphsVisualization({ data = [], title }) {
 
       <Box sx={{ width: '100%', height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart>
+          <LineChart data={graphData} margin={{ left: 0, right: 0, top: 0, bottom: 20 }}>
             <CartesianGrid stroke="#ccc" />
+            <Line
+              type="monotone"
+              dataKey="totalPrice"
+              stroke="#8884d8"
+              strokeWidth={2}
+              dot={{
+                fill: '#8884d8',
+                stroke: '#8884d8',
+                strokeWidth: 1,
+                r: 5,
+              }}
+            >
+              {graphData.map((entry, index) => (
+                <circle
+                  key={`dot-${index}`}
+                  cx={entry.x}
+                  cy={entry.y}
+                  r={5}
+                  fill={entry.soldStatus === 1 ? "green" : "red"} // Green for sold, red for unsold
+                />
+              ))}
+            </Line>
 
             {/* XAxis with formatted date */}
             <XAxis
@@ -167,39 +191,40 @@ export function CompletedGraphsVisualization({ data = [], title }) {
               angle={-45}
               textAnchor="end"
               tickFormatter={(tick) => formatDate(tick)}
-              height={60} 
+              height={60} // Extra space for angled text
             />
 
             {/* YAxis with dollar sign */}
             <YAxis tickFormatter={(tick) => `$${tick}`} />
 
-            {/* Compact Tooltip with smaller design */}
+            {/* Tooltip with item details */}
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const item = payload[0].payload;
                   return (
-                    <Box sx={{
-                      border: '1px solid #ccc',
-                      p: 1,
-                      borderRadius: 2,
-                      backgroundColor: '#fff',
-                      width: '200px', // Reduced width
-                      maxWidth: '100%',
-                      display: 'flex',
-                      flexDirection: 'column', // Stacked for smaller size
-                    }}>
-                      {/* Image and Title Container */}
+                    <Box
+                      sx={{
+                        border: '1px solid #ccc',
+                        p: 1,
+                        borderRadius: 2,
+                        backgroundColor: '#fff',
+                        width: '200px',
+                        maxWidth: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      {/* Image and Title */}
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        {/* Thumbnail image */}
                         {item.imageUrl && (
                           <Box sx={{ flex: '0 0 40px', mr: 1 }}>
                             <img
                               src={item.imageUrl}
                               alt={item.title}
                               style={{
-                                width: '40px', // Smaller image
+                                width: '40px',
                                 height: '40px',
                                 objectFit: 'cover',
                                 borderRadius: '4px',
@@ -207,13 +232,15 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                             />
                           </Box>
                         )}
-                        {/* Title */}
-                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', fontSize: '0.8rem', maxWidth: '140px' }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: 'bold', fontSize: '0.8rem', maxWidth: '140px' }}
+                        >
                           {item.title}
                         </Typography>
                       </Box>
 
-                      {/* Item details */}
+                      {/* Item Details */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Price:</Typography>
                         <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{`$${item.price}`}</Typography>
@@ -227,7 +254,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                         <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{item.condition}</Typography>
                       </Box>
 
-                      {/* Sold status with icon */}
+                      {/* Sold Status with icons */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                         <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Sold Status:</Typography>
                         {item.soldStatus == 1 ? (
@@ -246,25 +273,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                 return null;
               }}
             />
-
-            {/* Scatter Plot with conditional coloring */}
-            <Scatter
-              data={graphData}
-              shape="circle"
-              dataKey="totalPrice"
-              fill="#8884d8"
-            >
-              {graphData.map((entry, index) => (
-                <circle
-                  key={`dot-${index}`}
-                  cx={entry.x}
-                  cy={entry.y}
-                  r={5}
-                  fill={entry.soldStatus === 1 ? "green" : "red"}
-                />
-              ))}
-            </Scatter>
-          </ScatterChart>
+          </LineChart>
         </ResponsiveContainer>
       </Box>
     </Box>
