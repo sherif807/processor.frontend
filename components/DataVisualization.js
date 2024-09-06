@@ -279,7 +279,7 @@ export function LiveGraphsVisualization({ data = [], title }) {
       .map((item) => ({
         date: item.listingDate,
         totalPrice: item.totalPrice || 0, // Total price of the item
-        title: item.subtitle || 'Unknown Title', // Item title
+        title: item.title || 'Unknown Title', // Item title
         price: item.price, // Item price
         shippingPrice: item.shippingPrice, // Shipping price
         condition: item.condition, // Condition of the item
