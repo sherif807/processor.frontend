@@ -273,43 +273,110 @@ export function CompletedGraphsVisualization({ data = [], title }) {
 
 
 export function LiveGraphsVisualization({ data = [], title }) {
-  // Format data and reverse it for proper chronological display
+  // Format and sort data by listingDate
   const formatGraphData = (data) =>
-    (data).map((item) => ({
-      date: item.listingDate,
-      totalPrice: item.totalPrice || 0, // Using totalPrice only
-    })).reverse(); // Reverse the data to start from the oldest
+    data
+      .map((item) => ({
+        date: item.listingDate,
+        totalPrice: item.totalPrice || 0, // Total price of the item
+        title: item.subtitle || 'Unknown Title', // Item title
+        price: item.price, // Item price
+        shippingPrice: item.shippingPrice, // Shipping price
+        condition: item.condition, // Condition of the item
+        imageUrl: item.imageUrl || '', // Item image
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by listingDate
+      .reverse(); // Reverse to show oldest first
 
   const graphData = formatGraphData(data);
 
   return (
     <Box sx={{ p: 0, width: '100%' }}>
-      <Typography variant="h6" align="center">{title}</Typography>
+      <Typography variant="h6" align="center" sx={{ fontWeight: 'bold' }}>
+        {title}
+      </Typography>
 
       <Box sx={{ width: '100%', height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={graphData} margin={{ left: 0, right: 0, top: 0, bottom: 20 }}>
             <Line type="monotone" dataKey="totalPrice" stroke="#8884d8" />
+
             <CartesianGrid stroke="#ccc" />
-            
+
             {/* XAxis with formatted date */}
-            <XAxis 
-              dataKey="date" 
-              angle={-45} 
-              textAnchor="end" 
-              tickFormatter={(tick) => formatDate(tick)} 
+            <XAxis
+              dataKey="date"
+              angle={-45}
+              textAnchor="end"
+              tickFormatter={(tick) => formatDate(tick)}
               height={60} // Extra space for angled text
             />
 
             {/* YAxis with dollar sign */}
-            <YAxis 
-              tickFormatter={(tick) => `$${tick}`} 
-            />
+            <YAxis tickFormatter={(tick) => `$${tick}`} />
 
-            {/* Tooltip */}
-            <Tooltip 
-              formatter={(value) => [`$${value}`, 'totalPrice']}
-              offset={30} // To prevent overlap with graph
+            {/* Tooltip to show item details */}
+            <Tooltip
+              cursor={{ strokeDasharray: '3 3' }}
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const item = payload[0].payload;
+                  return (
+                    <Box sx={{
+                      border: '1px solid #ccc',
+                      p: 1,
+                      borderRadius: 2,
+                      backgroundColor: '#fff',
+                      width: '200px',
+                      maxWidth: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}>
+                      {/* Image and Title */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        {/* Thumbnail */}
+                        {item.imageUrl && (
+                          <Box sx={{ flex: '0 0 40px', mr: 1 }}>
+                            <img
+                              src={item.imageUrl}
+                              alt={item.title}
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                objectFit: 'cover',
+                                borderRadius: '4px',
+                              }}
+                            />
+                          </Box>
+                        )}
+                        {/* Title */}
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', fontSize: '0.8rem', maxWidth: '140px' }}>
+                          {item.title}
+                        </Typography>
+                      </Box>
+
+                      {/* Item details */}
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Price:</Typography>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{`$${item.price}`}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Shipping:</Typography>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{`$${item.shippingPrice}`}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Condition:</Typography>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>{item.condition}</Typography>
+                      </Box>
+
+                      <Typography variant="body2" sx={{ mt: 1, color: 'gray', textAlign: 'right', fontSize: '0.7rem' }}>
+                        {`Date: ${formatDate(item.date)}`}
+                      </Typography>
+                    </Box>
+                  );
+                }
+                return null;
+              }}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -317,4 +384,3 @@ export function LiveGraphsVisualization({ data = [], title }) {
     </Box>
   );
 }
-
