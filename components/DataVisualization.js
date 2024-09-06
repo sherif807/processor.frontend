@@ -167,23 +167,16 @@ export function CompletedGraphsVisualization({ data = [], title }) {
               dataKey="totalPrice"
               stroke="#8884d8"
               strokeWidth={2}
-              dot={{
-                fill: '#8884d8',
-                stroke: '#8884d8',
-                strokeWidth: 1,
-                r: 5,
-              }}
-            >
-              {graphData.map((entry, index) => (
+              dot={({ cx, cy, payload }) => (
                 <circle
-                  key={`dot-${index}`}
-                  cx={entry.x}
-                  cy={entry.y}
+                  cx={cx}
+                  cy={cy}
                   r={5}
-                  fill={entry.soldStatus === 1 ? "green" : "red"} // Green for sold, red for unsold
+                  fill={payload.soldStatus === 1 ? 'green' : 'red'} // Green for sold, red for unsold
+                  stroke={payload.soldStatus === 1 ? 'green' : 'red'} // Matching stroke color
                 />
-              ))}
-            </Line>
+              )}
+            />
 
             {/* XAxis with formatted date */}
             <XAxis
@@ -191,7 +184,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
               angle={-45}
               textAnchor="end"
               tickFormatter={(tick) => formatDate(tick)}
-              height={60} // Extra space for angled text
+              height={60} 
             />
 
             {/* YAxis with dollar sign */}
@@ -210,7 +203,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                         p: 1,
                         borderRadius: 2,
                         backgroundColor: '#fff',
-                        width: '200px',
+                        width: '200px', // Reduced width
                         maxWidth: '100%',
                         display: 'flex',
                         flexDirection: 'column',
@@ -257,7 +250,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                       {/* Sold Status with icons */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                         <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Sold Status:</Typography>
-                        {item.soldStatus == 1 ? (
+                        {item.soldStatus === 1 ? (
                           <HandThumbUpIcon className="h-4 w-4 text-green-500" />
                         ) : (
                           <HandThumbDownIcon className="h-4 w-4 text-red-500" />
@@ -279,7 +272,6 @@ export function CompletedGraphsVisualization({ data = [], title }) {
     </Box>
   );
 }
-
 
 export function LiveGraphsVisualization({ data = [], title }) {
   // Format and sort data by listingDate
