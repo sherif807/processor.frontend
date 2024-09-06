@@ -230,7 +230,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                       {/* Sold status with icon */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                         <Typography variant="body2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>Sold Status:</Typography>
-                        {item.soldStatus === "Sold" ? (
+                        {item.soldStatus == 1 ? (
                           <HandThumbUpIcon className="h-4 w-4 text-green-500" />
                         ) : (
                           <HandThumbDownIcon className="h-4 w-4 text-red-500" />
@@ -260,7 +260,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                   cx={entry.x}
                   cy={entry.y}
                   r={5}
-                  fill={entry.soldStatus === "Sold" ? "green" : "red"}
+                  fill={entry.soldStatus === 1 ? "green" : "red"}
                 />
               ))}
             </Scatter>

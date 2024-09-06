@@ -12,9 +12,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Picture', href: '#', icon: PhotoIcon, current: false },
-  { name: 'Dismissed Items', href: '#', icon: ChartPieIcon, current: false } // Add new item here
+  { name: 'Items', href: '#', icon: HomeIcon, current: true },
+  { name: 'Dismissed Items', href: '#', icon: ChartPieIcon, current: false }, // Add new item here
+  { name: 'Picture', href: '#', icon: PhotoIcon, current: false }
 ];
 
 const teams = [
