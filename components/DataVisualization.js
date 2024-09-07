@@ -39,9 +39,14 @@ function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div className="font-semibold">New</div>
 
       {/* Labels + Data */}
+
       <div className="text-gray-500 font-medium">Average Price</div>
       <div>{`$${Math.round(preOwnedData?.averageSoldPrice || 0)}`}</div>
       <div>{`$${Math.round(newData?.averageSoldPrice || 0)}`}</div>
+
+      <div className="text-gray-500 font-medium">Median Price</div>
+      <div>{`$${Math.round(preOwnedData?.median || 0)}`}</div>
+      <div>{`$${Math.round(newData?.median || 0)}`}</div>
 
       <div className="text-gray-500 font-medium">Sold %</div>
       <div className="flex justify-center items-center space-x-2">
@@ -81,6 +86,10 @@ function SalesDataSectionLive({ livePreOwned,  liveNew }) {
       <div className="text-gray-500 font-medium">Average Price</div>
       <div>{`$${Math.round(livePreOwned?.avgPrice || 0)}`}</div>
       <div>{`$${Math.round(liveNew?.avgPrice || 0)}`}</div>
+
+      <div className="text-gray-500 font-medium">Median Price</div>
+      <div>{`$${Math.round(livePreOwned?.median || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.median || 0)}`}</div>      
 
       <div className="text-gray-500 font-medium">Min Price</div>
       <div>{`$${Math.round(livePreOwned?.minPrice || 0)}`}</div>
