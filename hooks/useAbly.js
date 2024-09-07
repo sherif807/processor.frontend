@@ -1,25 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import Ably from 'ably';
 
 export function useAbly(channelName, callbackOnMessage) {
-  const ablyRef = useRef(null);
-
   useEffect(() => {
-    if (!ablyRef.current) {
-      ablyRef.current = new Ably.Realtime(process.env.NEXT_PUBLIC_ABLY_KEY);
-    }
+    const ably = new Ably.Realtime(process.env.NEXT_PUBLIC_ABLY_KEY);
+    const channel = ably.channels.get(channelName);
 
-    const channel = ablyRef.current.channels.get(channelName);
-
+    channel.subscribe(callbackOnMessage);
 
     return () => {
-        
-        try {
-            // Close the Ably connection when done
-            if (ablyRef.current.connection.state === 'connected' || ablyRef.current.connection.state === 'connecting' || ablyRef.current.connection.state === 'closed') {
-            channel.unsubscribe(callbackOnMessage);
-          ablyRef.current.close();
-        }
+      channel.unsubscribe(callbackOnMessage);
+
+      try {
+        // Check if Ably is still active before closing
+        // if (ably.connection.state === 'connected' || ably.connection.state === 'connecting') {
+        //   ably.close();
+        // }
       } catch (error) {
         console.error('Error during Ably cleanup:', error);
       }
