@@ -1,34 +1,39 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 
-export default function PictureUploadComponent({ uploadPicture, setCurrentPage }) {
-  const [file, setFile] = useState(null);
+export default function PictureUploadComponent({ uploadPicture }) {
+  const fileInputRef = useRef(null);
 
+  // Handle when a file is selected (from the camera)
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleUpload = () => {
+    const file = e.target.files[0];
     if (file) {
       uploadPicture(file);
-    } else {
-      alert("Please select a file first.");
     }
+  };
+
+  // Programmatically trigger the hidden file input
+  const handleButtonClick = () => {
+    fileInputRef.current.click(); // Open the camera
   };
 
   return (
     <div className="p-4">
-      {/* Automatically opens the camera */}
-      <input 
-        type="file" 
-        accept="image/*" 
-        capture="environment" // This directly opens the camera
-        onChange={handleFileChange} 
+      {/* Hidden file input */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={fileInputRef} // Reference to trigger input programmatically
+        style={{ display: 'none' }} // Hide the file input
+        onChange={handleFileChange}
       />
+
+      {/* Single Upload button */}
       <button
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-        onClick={handleUpload}
+        onClick={handleButtonClick}
       >
-        Upload Picture
+        Upload
       </button>
     </div>
   );

@@ -48,6 +48,15 @@ function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div>{`$${Math.round(preOwnedData?.median || 0)}`}</div>
       <div>{`$${Math.round(newData?.median || 0)}`}</div>
 
+      <div className="text-gray-500 font-medium">Sold Count</div>
+      <div>{`${Math.round(preOwnedData?.numberOfItemsSold || 0)}`}</div>
+      <div>{`${Math.round(newData?.numberOfItemsSold || 0)}`}</div>
+
+      <div className="text-gray-500 font-medium">Unsold Count</div>
+      <div>{`${Math.round(preOwnedData?.numberOfItemsNotSold || 0)}`}</div>
+      <div>{`${Math.round(newData?.numberOfItemsNotSold || 0)}`}</div>
+
+
       <div className="text-gray-500 font-medium">Sold %</div>
       <div className="flex justify-center items-center space-x-2">
         {preOwnedSoldPercentage === 100 && <CheckIcon className="h-5 w-5 text-green-500" />}
