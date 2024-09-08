@@ -17,7 +17,13 @@ export default function PictureUploadComponent({ uploadPicture, setCurrentPage }
 
   return (
     <div className="p-4">
-      <input type="file" onChange={handleFileChange} />
+      {/* Automatically opens the camera */}
+      <input 
+        type="file" 
+        accept="image/*" 
+        capture="environment" // This directly opens the camera
+        onChange={handleFileChange} 
+      />
       <button
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
         onClick={handleUpload}
