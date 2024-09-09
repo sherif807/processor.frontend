@@ -1,6 +1,6 @@
-import React from 'react';
+import { React, useState} from 'react';
 import { Box, Typography } from '@mui/material';
-import { HandThumbUpIcon, HandThumbDownIcon } from '@heroicons/react/24/outline'; 
+import { HandThumbUpIcon, HandThumbDownIcon, InformationCircleIcon } from '@heroicons/react/24/outline'; 
 
 
 import {
@@ -17,13 +17,31 @@ import {
 
 import { CheckIcon } from '@heroicons/react/24/solid';
 
+
+
+
 // Helper functions
 const calculateSoldVsUnsold = (sold, total) => {
   return total > 0 ? ((sold / total) * 100).toFixed(2) : 'N/A';
 };
 
 
-function SalesDataSectionCompleted({ preOwnedData, newData }) {
+function InfoPopup({ message }) {
+  return (
+    <div className="absolute bg-gray-800 text-white text-xs rounded py-1 px-2 z-50 shadow-md">
+      {message}
+    </div>
+  );
+}
+
+
+
+export function SalesDataSectionCompleted({ preOwnedData, newData }) {
+  const [popup, setPopup] = useState({});
+
+
+  
+
   const preOwnedSoldPercentage = Math.round(
     calculateSoldVsUnsold(preOwnedData?.numberOfItemsSold, preOwnedData?.numberOfItems)
   );
@@ -31,8 +49,11 @@ function SalesDataSectionCompleted({ preOwnedData, newData }) {
     calculateSoldVsUnsold(newData?.numberOfItemsSold, newData?.numberOfItems)
   );
 
+  const showPopup = (label) => setPopup({ [label]: true });
+  const hidePopup = () => setPopup({});
+
   return (
-    <div className="grid grid-cols-3 gap-4 text-center">
+    <div className="grid grid-cols-3 gap-4 text-center relative">
       {/* First row: Headers */}
       <div></div> {/* Empty for label column */}
       <div className="font-semibold">Pre-Owned</div>
@@ -48,6 +69,51 @@ function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div>{`$${Math.round(preOwnedData?.median || 0)}`}</div>
       <div>{`$${Math.round(newData?.median || 0)}`}</div>
 
+      {/* Desirability Score with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Desirability Score
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('desirability')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.desirability && (
+          <InfoPopup message="Desirability Score measures the demand for this product." />
+        )}
+      </div>
+      <div>{`${Math.round(preOwnedData?.desirabilityScore || 0)}%`}</div>
+      <div>{`${Math.round(newData?.desirabilityScore || 0)}%`}</div>
+
+      {/* Sales Frequency per week with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Sales Frequency per week
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('weeklyFrequency')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.weeklyFrequency && (
+          <InfoPopup message="How often this product sells on a weekly basis." />
+        )}
+      </div>
+      <div>{`${Math.round(preOwnedData?.salesFrequencyPerWeek || 0)}`}</div>
+      <div>{`${Math.round(newData?.salesFrequencyPerWeek || 0)}`}</div>
+
+      {/* Sales Frequency per month with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Sales Frequency per month
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('monthlyFrequency')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.monthlyFrequency && (
+          <InfoPopup message="How often this product sells on a monthly basis." />
+        )}
+      </div>
+      <div>{`${Math.round(preOwnedData?.salesFrequencyPerMonth || 0)}`}</div>
+      <div>{`${Math.round(newData?.salesFrequencyPerMonth || 0)}`}</div>
+
       <div className="text-gray-500 font-medium">Sold Count</div>
       <div>{`${Math.round(preOwnedData?.numberOfItemsSold || 0)}`}</div>
       <div>{`${Math.round(newData?.numberOfItemsSold || 0)}`}</div>
@@ -55,7 +121,6 @@ function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div className="text-gray-500 font-medium">Unsold Count</div>
       <div>{`${Math.round(preOwnedData?.numberOfItemsNotSold || 0)}`}</div>
       <div>{`${Math.round(newData?.numberOfItemsNotSold || 0)}`}</div>
-
 
       <div className="text-gray-500 font-medium">Sold %</div>
       <div className="flex justify-center items-center space-x-2">
@@ -76,49 +141,223 @@ function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div>{`${Math.round(newData?.salesFreshness?.averageDaysToSell || 0)} days`}</div>
 
       <div className="text-gray-500 font-medium">Freshness Score</div>
-      <div>{`${preOwnedData?.salesFreshness?.salesFreshnessScore || 0} Freshness`}</div>
-      <div>{`${newData?.salesFreshness?.salesFreshnessScore || 0} Freshness`}</div>
+      <div>{`${preOwnedData?.salesFreshness || 0}`}</div>
+      <div>{`${newData?.salesFreshness || 0}`}</div>
+
+
+      <div className="text-gray-500 font-medium">Freshness Percentage</div>
+      <div>{`${preOwnedData?.salesFreshnessPercentage || 0}%`}</div>
+      <div>{`${newData?.salesFreshnessPercentage || 0}%`}</div>
+
+      <div className="text-gray-500 font-medium">Freshness Description</div>
+      <div>{`${preOwnedData?.salesFreshnessDescription}`}</div>
+      <div>{`${newData?.salesFreshnessDescription}`}</div>
+
+      <div className="text-gray-500 font-medium">Days Since Last Sale</div>
+      <div>{`${preOwnedData?.salesFreshness?.daysSinceLastSale || 0} days`}</div>
+      <div>{`${newData?.salesFreshness?.daysSinceLastSale || 0} days`}</div>
+
+
+      <div className="text-gray-500 font-medium">Min Price</div>
+      <div>{`$${Math.round(preOwnedData?.minPrice || 0)}`}</div>
+      <div>{`$${Math.round(newData?.minPrice || 0)}`}</div>
+
+      <div className="text-gray-500 font-medium">Max Price</div>
+      <div>{`$${Math.round(preOwnedData?.maxPrice || 0)}`}</div>
+      <div>{`$${Math.round(newData?.maxPrice || 0)}`}</div>
+
     </div>
   );
 }
 
 
-function SalesDataSectionLive({ livePreOwned,  liveNew }) {
+
+export function SalesDataSectionLive({ livePreOwned, liveNew }) {
+  const [popup, setPopup] = useState({});
+
+  const showPopup = (label) => setPopup({ [label]: true });
+  const hidePopup = () => setPopup({});
 
   return (
-    <div className="grid grid-cols-3 gap-4 text-center">
+    <div className="grid grid-cols-3 gap-4 text-center relative">
       {/* First row: Headers */}
       <div></div> {/* Empty for label column */}
       <div className="font-semibold">Pre-Owned</div>
       <div className="font-semibold">New</div>
+
       {/* Labels + Data */}
       <div className="text-gray-500 font-medium">Average Price</div>
-      <div>{`$${Math.round(livePreOwned?.avgPrice || 0)}`}</div>
-      <div>{`$${Math.round(liveNew?.avgPrice || 0)}`}</div>
+      <div>{`$${Math.round(livePreOwned?.avgLivePrice || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.avgLivePrice || 0)}`}</div>
 
       <div className="text-gray-500 font-medium">Median Price</div>
-      <div>{`$${Math.round(livePreOwned?.median || 0)}`}</div>
-      <div>{`$${Math.round(liveNew?.median || 0)}`}</div>      
+      <div>{`$${Math.round(livePreOwned?.medianLive || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.medianLive || 0)}`}</div>
 
-      <div className="text-gray-500 font-medium">Min Price</div>
-      <div>{`$${Math.round(livePreOwned?.minPrice || 0)}`}</div>
-      <div>{`$${Math.round(liveNew?.minPrice || 0)}`}</div>
+      {/* Desirability Score with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Desirability Score
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('desirability')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.desirability && (
+          <InfoPopup message="Desirability Score measures the demand for this product." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.desirabilityScore || 0)}%`}</div>
+      <div>{`${Math.round(liveNew?.desirabilityScore || 0)}%`}</div>
 
+      {/* Sales Frequency per week with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Sales Frequency per week
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('weeklyFrequency')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.weeklyFrequency && (
+          <InfoPopup message="How often this product is sold on a weekly basis." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.salesFrequencyPerWeek || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.salesFrequencyPerWeek || 0)}`}</div>
 
+      {/* Sales Frequency per month with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Sales Frequency per month
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('monthlyFrequency')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.monthlyFrequency && (
+          <InfoPopup message="How often this product is sold on a monthly basis." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.salesFrequencyPerMonth || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.salesFrequencyPerMonth || 0)}`}</div>
 
+      {/* Min Price with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Min Price
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('minPrice')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.minPrice && (
+          <InfoPopup message="The lowest price currently listed for this item." />
+        )}
+      </div>
+      <div>{`$${Math.round(livePreOwned?.minLivePrice || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.minLivePrice || 0)}`}</div>
 
+      {/* Max Price with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Max Price
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('maxPrice')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.maxPrice && (
+          <InfoPopup message="The highest price currently listed for this item." />
+        )}
+      </div>
+      <div>{`$${Math.round(livePreOwned?.maxLivePrice || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.maxLivePrice || 0)}`}</div>
 
-      <div className="text-gray-500 font-medium">Competition Score</div>
-      <div>{`${livePreOwned?.competitionScore || 0}`}</div>
-      <div>{`${liveNew?.competitionScore || 0}`}</div>
+      {/* Range with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Price Range
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('priceRange')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.priceRange && (
+          <InfoPopup message="The difference between the highest and lowest prices for this item." />
+        )}
+      </div>
+      <div>{`$${Math.round(livePreOwned?.rangeLive || 0)}`}</div>
+      <div>{`$${Math.round(liveNew?.rangeLive || 0)}`}</div>
 
-      <div className="text-gray-500 font-medium">Desirability Score</div>
-      <div>{`${Math.round(livePreOwned?.desirabilityScore || 0)}`}</div>
-      <div>{`${Math.round(liveNew?.desirabilityScore || 0)}`}</div>
+      {/* Competition Score with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Competition Score
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('competitionScore')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.competitionScore && (
+          <InfoPopup message="A measure of how many items are currently listed compared to sold ones." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.competitionScore || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.competitionScore || 0)}`}</div>
 
-      <div className="text-gray-500 font-medium">Freshness Score</div>
-      <div>{`${livePreOwned?.salesFreshness?.salesFreshnessScore || 0} Freshness`}</div>
-      <div>{`${liveNew?.salesFreshness?.salesFreshnessScore || 0} Freshness`}</div>
+      {/* Avg Days on Market with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Avg Days on Market (DOM)
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('avgDOM')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.avgDOM && (
+          <InfoPopup message="The average number of days listings have been active." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.avgDOM || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.avgDOM || 0)}`}</div>
+
+      {/* Min Days on Market with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Min Days on Market (DOM)
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('minDOM')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.minDOM && (
+          <InfoPopup message="The minimum number of days a listing has been on the market." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.minDOM || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.minDOM || 0)}`}</div>
+
+      {/* Max Days on Market with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Max Days on Market (DOM)
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('maxDOM')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.maxDOM && (
+          <InfoPopup message="The maximum number of days a listing has been on the market." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.maxDOM || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.maxDOM || 0)}`}</div>
+
+      {/* Median Days on Market with InfoPopup */}
+      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+        Median Days on Market (DOM)
+        <InformationCircleIcon
+          className="h-4 w-4 text-gray-400 cursor-pointer"
+          onMouseEnter={() => showPopup('medianDOM')}
+          onMouseLeave={hidePopup}
+        />
+        {popup.medianDOM && (
+          <InfoPopup message="The median number of days listings have been on the market." />
+        )}
+      </div>
+      <div>{`${Math.round(livePreOwned?.medianDOM || 0)}`}</div>
+      <div>{`${Math.round(liveNew?.medianDOM || 0)}`}</div>
     </div>
   );
 }
@@ -171,10 +410,18 @@ export function CompletedGraphsVisualization({ data = [], title }) {
         condition: item.condition, // Condition of the item
         imageUrl: item.imageUrl || '', // Item image
       }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort data by date
-      .reverse(); // Reverse to show the oldest first
+      .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort data by date in ascending order
 
   const graphData = formatGraphData(data);
+
+  // Helper to format the date as 'MMM d' (e.g., 'Jul 24')
+  const formatTickDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  };
 
   return (
     <Box sx={{ p: 0, width: '100%' }}>
@@ -202,12 +449,12 @@ export function CompletedGraphsVisualization({ data = [], title }) {
               )}
             />
 
-            {/* XAxis with formatted date */}
+            {/* XAxis with formatted date (show month and day) */}
             <XAxis
               dataKey="date"
               angle={-45}
               textAnchor="end"
-              tickFormatter={(tick) => formatDate(tick)}
+              tickFormatter={(tick) => formatTickDate(tick)} // Format the tick date as 'MMM d'
               height={60} 
             />
 
@@ -282,7 +529,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
                       </Box>
 
                       <Typography variant="body2" sx={{ mt: 1, color: 'gray', textAlign: 'right', fontSize: '0.7rem' }}>
-                        {`Date: ${formatDate(item.date)}`}
+                        {`Date: ${formatTickDate(item.date)}`}
                       </Typography>
                     </Box>
                   );
@@ -296,6 +543,8 @@ export function CompletedGraphsVisualization({ data = [], title }) {
     </Box>
   );
 }
+
+
 
 export function LiveGraphsVisualization({ data = [], title }) {
 
