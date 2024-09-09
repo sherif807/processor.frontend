@@ -152,6 +152,12 @@ const formatDate = (dateString) => {
 };
 
 export function CompletedGraphsVisualization({ data = [], title }) {
+
+  if (!Array.isArray(data) || data.length === 0) {
+    console.log("Data is either not an array or is empty:", data);
+    return null; // Return early if data is not valid
+  }
+
   // Format data to include necessary details for each item
   const formatGraphData = (data) =>
     data
@@ -292,6 +298,14 @@ export function CompletedGraphsVisualization({ data = [], title }) {
 }
 
 export function LiveGraphsVisualization({ data = [], title }) {
+
+
+  if (!Array.isArray(data) || data.length === 0) {
+    console.log("Data is either not an array or is empty:", data);
+    return null; // Return early if data is not valid
+  }
+
+
   // Format and sort data by listingDate
   const formatGraphData = (data) =>
     data
