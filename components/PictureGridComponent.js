@@ -142,17 +142,6 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
         {item.searchString}
       </button>
 
-      {item.links?.liveUrl && (
-        <a
-          href={item.links.liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="absolute right-2 top-2 text-blue-500 hover:text-blue-700"
-          style={{ zIndex: 10 }}
-        >
-          <LinkIcon className="h-5 w-5" aria-hidden="true" />
-        </a>
-      )}
 
       {isExpanded && analytics && (
         <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">
@@ -181,15 +170,15 @@ function AnalyticsSlider({ analytics, item }) {
       <div key="history" className="p-0">
         {/* <Typography variant="h4" gutterBottom>History</Typography> */}
         <CompletedDataAnalytics analytics={analytics} />
-        <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} />
+        <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} completedUrl = {item.links?.completedUrl}/>
       </div>
 
       {/* Live Slide */}
       <div key="live" className="p-0">
-        <Typography variant="h4" gutterBottom></Typography>
-        <LiveDataAnalytics analytics={analytics} />
+        {/* <Typography variant="h4" gutterBottom></Typography> */}
+        <LiveDataAnalytics analytics={analytics}/>
 
-        <LiveGraphsVisualization data={item.prices?.ebayLiveData} />
+        <LiveGraphsVisualization data={item.prices?.ebayLiveData}  liveUrl = { item.links?.liveUrl}/>
       </div>
     </Slider>
   );

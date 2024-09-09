@@ -1,6 +1,6 @@
 import { React, useState} from 'react';
 import { Box, Typography, LinearProgress } from '@mui/material';
-import { HandThumbUpIcon, HandThumbDownIcon, InformationCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'; 
+import { HandThumbUpIcon, HandThumbDownIcon, InformationCircleIcon, XMarkIcon, EyeIcon, EyeSlashIcon, LinkIcon } from '@heroicons/react/24/outline'; 
 
 
 import {
@@ -151,7 +151,7 @@ export function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
         Desirability
         <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
+          className="h-4 w-4 text-gray-400 cursor-pointer ml-2"
           onMouseEnter={() => showPopup('desirability')}
           onMouseLeave={hidePopup}
         />
@@ -166,7 +166,7 @@ export function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
         Sales Per Week
         <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
+          className="h-4 w-4 text-gray-400 cursor-pointer  ml-2"
           onMouseEnter={() => showPopup('weeklyFrequency')}
           onMouseLeave={hidePopup}
         />
@@ -181,7 +181,7 @@ export function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
         Sales Per Month
         <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
+          className="h-4 w-4 text-gray-400 cursor-pointer  ml-2"
           onMouseEnter={() => showPopup('monthlyFrequency')}
           onMouseLeave={hidePopup}
         />
@@ -226,9 +226,10 @@ export function SalesDataSectionLive({ livePreOwned, liveNew }) {
       <div className="font-semibold">New</div>
 
       {/* Labels + Data */}
-      <div className="text-gray-500 font-medium">Average Price</div>
+      <div className="text-gray-500 font-medium">Average Live Price</div>
       <div>{displayValue(livePreOwned?.avgLivePrice, '$')}</div>
       <div>{displayValue(liveNew?.avgLivePrice, '$')}</div>
+
 
       {/* <div className="text-gray-500 font-medium">Median Price</div>
       <div>{displayValue(livePreOwned?.medianLive, '$')}</div>
@@ -236,71 +237,35 @@ export function SalesDataSectionLive({ livePreOwned, liveNew }) {
 
 
 
-      {/* Min Price with InfoPopup */}
-      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
-        Min Price
-        <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
-          onMouseEnter={() => showPopup('minPrice')}
-          onMouseLeave={hidePopup}
-        />
-        {popup.minPrice && (
-          <InfoPopup message="The lowest price currently listed for this item." />
-        )}
-      </div>
-      <div>{displayValue(livePreOwned?.minLivePrice, '$')}</div>
-      <div>{displayValue(liveNew?.minLivePrice, '$')}</div>
-
-      {/* Max Price with InfoPopup */}
-      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
-        Max Price
-        <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
-          onMouseEnter={() => showPopup('maxPrice')}
-          onMouseLeave={hidePopup}
-        />
-        {popup.maxPrice && (
-          <InfoPopup message="The highest price currently listed for this item." />
-        )}
-      </div>
-      <div>{displayValue(livePreOwned?.maxLivePrice, '$')}</div>
-      <div>{displayValue(liveNew?.maxLivePrice, '$')}</div>
-
-      {/* Price Range with InfoPopup */}
+      {/* Min Price and Max Price with Progress Bar */}
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
         Price Range
         <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
+          className="h-4 w-4 text-gray-400 cursor-pointer ml-1"
           onMouseEnter={() => showPopup('priceRange')}
           onMouseLeave={hidePopup}
         />
         {popup.priceRange && (
-          <InfoPopup message="The difference between the highest and lowest prices for this item." />
+          <InfoPopup message="The lowest and highest prices currently listed for this item." />
         )}
       </div>
-      <div>{displayValue(livePreOwned?.rangeLive, '$')}</div>
-      <div>{displayValue(liveNew?.rangeLive, '$')}</div>
+      <div>{renderPriceProgressBar(livePreOwned?.minLivePrice, livePreOwned?.maxLivePrice)}</div>
+      <div>{renderPriceProgressBar(liveNew?.minLivePrice, liveNew?.maxLivePrice)}</div>
+
+
 
       {/* Competition Score with InfoPopup */}
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
-        Competition Score
-        <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
-          onMouseEnter={() => showPopup('competitionScore')}
-          onMouseLeave={hidePopup}
-        />
-        {popup.competitionScore && (
-          <InfoPopup message="A measure of how many items are currently listed compared to sold ones." />
-        )}
+        Competition
       </div>
-      <div>{displayValue(livePreOwned?.competitionScore)}</div>
-      <div>{displayValue(liveNew?.competitionScore)}</div>
+      <div>{displayValue(livePreOwned?.competition)}</div>
+      <div>{displayValue(liveNew?.competition)}</div>
 
       {/* Avg Days on Market with InfoPopup */}
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
-        Avg Days on Market (DOM)
+        Avg Days on Market
         <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
+          className="h-4 w-4 text-gray-400 cursor-pointer ml-1"
           onMouseEnter={() => showPopup('avgDOM')}
           onMouseLeave={hidePopup}
         />
@@ -311,8 +276,8 @@ export function SalesDataSectionLive({ livePreOwned, liveNew }) {
       <div>{displayValue(livePreOwned?.avgDOM, '', 'days')}</div>
       <div>{displayValue(liveNew?.avgDOM, '', 'days')}</div>
 
-      {/* Min Days on Market with InfoPopup */}
-      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
+
+      {/* <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
         Min Days on Market (DOM)
         <InformationCircleIcon
           className="h-4 w-4 text-gray-400 cursor-pointer"
@@ -326,7 +291,7 @@ export function SalesDataSectionLive({ livePreOwned, liveNew }) {
       <div>{displayValue(livePreOwned?.minDOM, '', 'days')}</div>
       <div>{displayValue(liveNew?.minDOM, '', 'days')}</div>
 
-      {/* Max Days on Market with InfoPopup */}
+
       <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
         Max Days on Market (DOM)
         <InformationCircleIcon
@@ -339,28 +304,15 @@ export function SalesDataSectionLive({ livePreOwned, liveNew }) {
         )}
       </div>
       <div>{displayValue(livePreOwned?.maxDOM, '', 'days')}</div>
-      <div>{displayValue(liveNew?.maxDOM, '', 'days')}</div>
+      <div>{displayValue(liveNew?.maxDOM, '', 'days')}</div> */}
 
-      {/* Median Days on Market with InfoPopup */}
-      <div className="text-gray-500 font-medium flex items-center justify-center space-x-1 relative">
-        Median Days on Market (DOM)
-        <InformationCircleIcon
-          className="h-4 w-4 text-gray-400 cursor-pointer"
-          onMouseEnter={() => showPopup('medianDOM')}
-          onMouseLeave={hidePopup}
-        />
-        {popup.medianDOM && (
-          <InfoPopup message="The median number of days listings have been on the market." />
-        )}
-      </div>
-      <div>{displayValue(livePreOwned?.medianDOM, '', 'days')}</div>
-      <div>{displayValue(liveNew?.medianDOM, '', 'days')}</div>
+
     </div>
   );
 }
 
 
-export function LiveDataAnalytics({ analytics }) {
+export function LiveDataAnalytics({ analytics}) {
   const liveNew = analytics?.ebayAnalytics?.live['new'] || {};
   const livePreOwned = analytics?.ebayAnalytics?.live['pre-owned'] || {};
 
@@ -387,12 +339,28 @@ const formatDate = (dateString) => {
   return `${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`;
 };
 
-export function CompletedGraphsVisualization({ data = [], title }) {
 
+
+
+export function CompletedGraphsVisualization({ data = [], title , completedUrl}) {
   if (!Array.isArray(data) || data.length === 0) {
     console.log("Data is either not an array or is empty:", data);
     return null; // Return early if data is not valid
   }
+
+  // Thumbnail visibility percentages (0%, 30%, 60%, 100%)
+  const [thumbnailVisibility, setThumbnailVisibility] = useState(30); // Start at 30%
+
+  // Toggle the thumbnail visibility percentage
+  const toggleThumbnailVisibility = () => {
+    setThumbnailVisibility((prev) => {
+      if (prev === 100) return 0; // Reset to 0% after 100%
+      if (prev === 0) return 30;   // First toggle sets to 30%
+      if (prev === 30) return 60;  // Next toggle sets to 60%
+      if (prev === 60) return 100; // Next toggle sets to 100%
+      return 0;                    // Cycle back to 0% after 100%
+    });
+  };
 
   // Format data to include necessary details for each item
   const formatGraphData = (data) =>
@@ -420,11 +388,37 @@ export function CompletedGraphsVisualization({ data = [], title }) {
     }).format(date);
   };
 
+  // Limit thumbnails shown based on visibility percentage
+  const thumbnailLimit = Math.ceil((graphData.length * thumbnailVisibility) / 100);
+
   return (
     <Box sx={{ p: 0, width: '100%' }}>
       <Typography variant="h6" align="center" sx={{ fontWeight: 'bold' }}>
         {title}
       </Typography>
+
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 2 }}>
+        {/* Heroicon button to toggle thumbnail visibility */}
+        <button onClick={toggleThumbnailVisibility} className="flex items-center space-x-2">
+          {thumbnailVisibility === 0 ? (
+            <EyeSlashIcon className="h-6 w-6 text-gray-500" />
+          ) : (
+            <EyeIcon className="h-6 w-6 text-gray-500" />
+          )}
+          <span className="text-gray-500">
+            {thumbnailVisibility === 0 ? 'Show Images' : `Thumbnails: ${thumbnailVisibility}%`}
+          </span>
+        </button>
+
+        {/* LinkIcon aligned to the right */}
+        {completedUrl && (
+          <a href={completedUrl} target="_blank" rel="noopener noreferrer">
+            <LinkIcon className="h-6 w-6 text-blue-500 hover:text-blue-700 cursor-pointer" />
+          </a>
+        )}
+      </Box>
+
 
       <Box sx={{ width: '100%', height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -435,15 +429,51 @@ export function CompletedGraphsVisualization({ data = [], title }) {
               dataKey="totalPrice"
               stroke="#8884d8"
               strokeWidth={2}
-              dot={({ cx, cy, payload }) => (
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={5}
-                  fill={payload.soldStatus === 1 ? 'green' : 'red'} // Green for sold, red for unsold
-                  stroke={payload.soldStatus === 1 ? 'green' : 'red'} // Matching stroke color
-                />
-              )}
+              // Custom dot to display thumbnails with a limit
+              dot={({ cx, cy, index, payload }) => {
+                if (index % Math.ceil(graphData.length / thumbnailLimit) === 0 && thumbnailVisibility !== 0) {
+                  return (
+                    <>
+                      {/* Circle representing the dot */}
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={5}
+                        fill={payload.soldStatus === 1 ? 'green' : 'red'} // Green for sold, red for unsold
+                        stroke={payload.soldStatus === 1 ? 'green' : 'red'} // Matching stroke color
+                      />
+
+                      {/* Thumbnail near the dot */}
+                      {payload.imageUrl && (
+                        <foreignObject x={cx - 20} y={cy - 60} width="40" height="40">
+                          <img
+                            src={payload.imageUrl}
+                            alt={payload.title}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              objectFit: 'cover',
+                              borderRadius: '50%',
+                              border: '2px solid #ccc',
+                            }}
+                          />
+                        </foreignObject>
+                      )}
+                    </>
+                  );
+                }
+
+                // For other points, just render the dot without a thumbnail
+                return (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={5}
+                    fill={payload.soldStatus === 1 ? 'green' : 'red'} // Green for sold, red for unsold
+                    stroke={payload.soldStatus === 1 ? 'green' : 'red'} // Matching stroke color
+                  />
+                );
+              }}
             />
 
             {/* XAxis with formatted date (show month and day) */}
@@ -452,7 +482,7 @@ export function CompletedGraphsVisualization({ data = [], title }) {
               angle={-45}
               textAnchor="end"
               tickFormatter={(tick) => formatTickDate(tick)} // Format the tick date as 'MMM d'
-              height={60} 
+              height={60}
             />
 
             {/* YAxis with dollar sign */}
@@ -543,14 +573,28 @@ export function CompletedGraphsVisualization({ data = [], title }) {
 
 
 
-export function LiveGraphsVisualization({ data = [], title }) {
 
 
+
+export function LiveGraphsVisualization({ data = [], title, liveUrl}) {
   if (!Array.isArray(data) || data.length === 0) {
     console.log("Data is either not an array or is empty:", data);
     return null; // Return early if data is not valid
   }
 
+  // Thumbnail visibility percentages (0%, 30%, 60%, 100%)
+  const [thumbnailVisibility, setThumbnailVisibility] = useState(30); // Start at 30%
+
+  // Toggle the thumbnail visibility percentage
+  const toggleThumbnailVisibility = () => {
+    setThumbnailVisibility((prev) => {
+      if (prev === 100) return 0; // Reset to 0% after 100%
+      if (prev === 0) return 30;   // First toggle sets to 30%
+      if (prev === 30) return 60;  // Next toggle sets to 60%
+      if (prev === 60) return 100; // Next toggle sets to 100%
+      return 0;                    // Cycle back to 0% after 100%
+    });
+  };
 
   // Format and sort data by listingDate
   const formatGraphData = (data) =>
@@ -569,11 +613,45 @@ export function LiveGraphsVisualization({ data = [], title }) {
 
   const graphData = formatGraphData(data);
 
+  // Helper to format the date as 'MMM d' (e.g., 'Jul 24')
+  const formatTickDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  };
+
+  // Limit thumbnails shown based on visibility percentage
+  const thumbnailLimit = Math.ceil((graphData.length * thumbnailVisibility) / 100);
+
   return (
     <Box sx={{ p: 0, width: '100%' }}>
       <Typography variant="h6" align="center" sx={{ fontWeight: 'bold' }}>
         {title}
       </Typography>
+
+{/* Heroicon button to toggle thumbnail visibility and LinkIcon */}
+<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 2 }}>
+  <button onClick={toggleThumbnailVisibility} className="flex items-center space-x-2">
+    {thumbnailVisibility === 0 ? (
+      <EyeSlashIcon className="h-6 w-6 text-gray-500" />
+    ) : (
+      <EyeIcon className="h-6 w-6 text-gray-500" />
+    )}
+    <span className="text-gray-500">
+      {thumbnailVisibility === 0 ? 'Show Images' : `Thumbnails: ${thumbnailVisibility}%`}
+    </span>
+  </button>
+
+  {/* LinkIcon aligned to the right */}
+  {liveUrl && (
+    <a href={liveUrl} target="_blank" rel="noopener noreferrer">
+      <LinkIcon className="h-6 w-6 text-blue-500 hover:text-blue-700 cursor-pointer" />
+    </a>
+  )}
+</Box>
+
 
       <Box sx={{ width: '100%', height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -587,7 +665,7 @@ export function LiveGraphsVisualization({ data = [], title }) {
               dataKey="date"
               angle={-45}
               textAnchor="end"
-              tickFormatter={(tick) => formatDate(tick)}
+              tickFormatter={(tick) => formatTickDate(tick)}
               height={60} // Extra space for angled text
             />
 
@@ -649,12 +727,64 @@ export function LiveGraphsVisualization({ data = [], title }) {
                       </Box>
 
                       <Typography variant="body2" sx={{ mt: 1, color: 'gray', textAlign: 'right', fontSize: '0.7rem' }}>
-                        {`Date: ${formatDate(item.date)}`}
+                        {`Date: ${formatTickDate(item.date)}`}
                       </Typography>
                     </Box>
                   );
                 }
                 return null;
+              }}
+            />
+
+            {/* Custom dot to display thumbnails with a limit */}
+            <Line
+              type="monotone"
+              dataKey="totalPrice"
+              stroke="#8884d8"
+              strokeWidth={2}
+              dot={({ cx, cy, index, payload }) => {
+                if (index % Math.ceil(graphData.length / thumbnailLimit) === 0 && thumbnailVisibility !== 0) {
+                  return (
+                    <>
+                      {/* Circle representing the dot */}
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={5}
+                        fill="blue"
+                        stroke="blue"
+                      />
+
+                      {/* Thumbnail near the dot */}
+                      {payload.imageUrl && (
+                        <foreignObject x={cx - 20} y={cy - 60} width="40" height="40">
+                          <img
+                            src={payload.imageUrl}
+                            alt={payload.title}
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              objectFit: 'cover',
+                              borderRadius: '50%',
+                              border: '2px solid #ccc',
+                            }}
+                          />
+                        </foreignObject>
+                      )}
+                    </>
+                  );
+                }
+
+                // For other points, just render the dot without a thumbnail
+                return (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={5}
+                    fill="blue"
+                    stroke="blue"
+                  />
+                );
               }}
             />
           </LineChart>
@@ -663,3 +793,4 @@ export function LiveGraphsVisualization({ data = [], title }) {
     </Box>
   );
 }
+
