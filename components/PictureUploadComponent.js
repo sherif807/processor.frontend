@@ -1,22 +1,15 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function PictureUploadComponent({ uploadPicture }) {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadQueue, setUploadQueue] = useState([]); // To store files waiting to be uploaded
 
-  // Handle when a file is selected (from the camera)
-  const handleFileChange = async (e) => {
+  // Handle file selection and add it to the upload queue
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Start uploading and allow the user to continue
-      setIsUploading(true);  // Show upload state if needed
-      uploadPicture(file)
-        .then(() => {
-          setIsUploading(false);  // Hide upload state after done
-        })
-        .catch(() => {
-          setIsUploading(false);  // Hide upload state on error
-        });
+      setUploadQueue((prevQueue) => [...prevQueue, file]); // Add the new file to the queue
     }
   };
 
@@ -24,6 +17,27 @@ export default function PictureUploadComponent({ uploadPicture }) {
   const handleButtonClick = () => {
     fileInputRef.current.click(); // Open the camera
   };
+
+  // Process the upload queue one file at a time
+  useEffect(() => {
+    const processQueue = async () => {
+      if (isUploading || uploadQueue.length === 0) return; // If already uploading or queue is empty, return
+
+      const file = uploadQueue[0]; // Get the first file in the queue
+      setIsUploading(true);
+
+      try {
+        await uploadPicture(file); // Upload the file
+        setUploadQueue((prevQueue) => prevQueue.slice(1)); // Remove the file from the queue after uploading
+      } catch (error) {
+        console.error("Upload error:", error); // Handle upload failure if needed
+      } finally {
+        setIsUploading(false); // Reset the uploading state
+      }
+    };
+
+    processQueue(); // Call the function to process the queue
+  }, [uploadQueue, isUploading, uploadPicture]);
 
   return (
     <div className="p-4">
@@ -37,17 +51,20 @@ export default function PictureUploadComponent({ uploadPicture }) {
         onChange={handleFileChange}
       />
 
-      {/* Single Upload button */}
+      {/* Upload button */}
       <button
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
         onClick={handleButtonClick}
-        disabled={isUploading} // Disable button during upload if needed
       >
-        {isUploading ? 'Uploading...' : 'Upload'}
+        Upload
       </button>
 
       {/* Optional upload status indicator */}
-      {isUploading && <p className="mt-2 text-gray-500">Uploading in the background...</p>}
+      {isUploading && (
+        <p className="mt-2 text-gray-500">
+          Uploading in the background... ({uploadQueue.length} left)
+        </p>
+      )}
     </div>
   );
 }
