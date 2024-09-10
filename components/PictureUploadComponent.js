@@ -2,14 +2,14 @@ import { useRef, useState, useEffect } from 'react';
 
 export default function PictureUploadComponent({ uploadPicture }) {
   const fileInputRef = useRef(null);
-  const [uploadQueue, setUploadQueue] = useState([]); // Store files waiting to be uploaded
-  const [uploadInProgress, setUploadInProgress] = useState(false); // Track if there's an upload in progress
+  const [uploadQueue, setUploadQueue] = useState([]); // Queue to store files for uploading
+  const [isUploading, setIsUploading] = useState(false); // State to track upload progress
 
-  // Handle file selection and add to the upload queue
+  // Handle when a file is selected (from the camera)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setUploadQueue((prevQueue) => [...prevQueue, file]); // Add the selected file to the queue
+      setUploadQueue((prevQueue) => [...prevQueue, file]); // Add the file to the upload queue
     }
   };
 
@@ -21,24 +21,24 @@ export default function PictureUploadComponent({ uploadPicture }) {
   // Process the upload queue
   useEffect(() => {
     const processUploadQueue = async () => {
-      if (uploadInProgress || uploadQueue.length === 0) return;
+      if (isUploading || uploadQueue.length === 0) return; // Prevent multiple uploads at the same time
 
       const file = uploadQueue[0]; // Get the first file in the queue
-      setUploadInProgress(true); // Set upload in progress
+      setIsUploading(true); // Set upload in progress
 
       try {
         await uploadPicture(file); // Upload the file
       } catch (error) {
         console.error("Upload error:", error);
       } finally {
-        // After uploading, remove the file from the queue and continue
+        // After uploading, remove the file from the queue
         setUploadQueue((prevQueue) => prevQueue.slice(1)); // Remove the uploaded file
-        setUploadInProgress(false); // Allow the next upload to start
+        setIsUploading(false); // Allow the next upload to start
       }
     };
 
     processUploadQueue(); // Call the function to process the queue
-  }, [uploadQueue, uploadInProgress, uploadPicture]);
+  }, [uploadQueue, isUploading, uploadPicture]);
 
   return (
     <div className="p-4">
@@ -47,8 +47,8 @@ export default function PictureUploadComponent({ uploadPicture }) {
         type="file"
         accept="image/*"
         capture="environment"
-        ref={fileInputRef}
-        style={{ display: 'none' }}
+        ref={fileInputRef} // Reference to trigger input programmatically
+        style={{ display: 'none' }} // Hide the file input
         onChange={handleFileChange}
       />
 
@@ -57,13 +57,13 @@ export default function PictureUploadComponent({ uploadPicture }) {
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
         onClick={handleButtonClick}
       >
-        {uploadInProgress ? 'Uploading...' : 'Upload'}
+        {isUploading ? 'Uploading...' : 'Upload'}
       </button>
 
       {/* Optional queue indicator */}
       {uploadQueue.length > 0 && (
         <p className="mt-2 text-gray-500">
-          Uploading in the background... ({uploadQueue.length} left)
+          Uploading in the background... ({uploadQueue.length} file(s) remaining)
         </p>
       )}
     </div>
