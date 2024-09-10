@@ -1,15 +1,13 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 
 export default function PictureUploadComponent({ uploadPicture }) {
   const fileInputRef = useRef(null);
-  const [uploadQueue, setUploadQueue] = useState([]); // Queue to store files for uploading
-  const [isUploading, setIsUploading] = useState(false); // State to track upload progress
 
   // Handle when a file is selected (from the camera)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setUploadQueue((prevQueue) => [...prevQueue, file]); // Add the file to the upload queue
+      uploadPicture(file);
     }
   };
 
@@ -17,28 +15,6 @@ export default function PictureUploadComponent({ uploadPicture }) {
   const handleButtonClick = () => {
     fileInputRef.current.click(); // Open the camera
   };
-
-  // Process the upload queue
-  useEffect(() => {
-    const processUploadQueue = async () => {
-      if (isUploading || uploadQueue.length === 0) return; // Prevent multiple uploads at the same time
-
-      const file = uploadQueue[0]; // Get the first file in the queue
-      setIsUploading(true); // Set upload in progress
-
-      try {
-        await uploadPicture(file); // Upload the file
-      } catch (error) {
-        console.error("Upload error:", error);
-      } finally {
-        // After uploading, remove the file from the queue
-        setUploadQueue((prevQueue) => prevQueue.slice(1)); // Remove the uploaded file
-        setIsUploading(false); // Allow the next upload to start
-      }
-    };
-
-    processUploadQueue(); // Call the function to process the queue
-  }, [uploadQueue, isUploading, uploadPicture]);
 
   return (
     <div className="p-4">
@@ -52,20 +28,13 @@ export default function PictureUploadComponent({ uploadPicture }) {
         onChange={handleFileChange}
       />
 
-      {/* Upload button */}
+      {/* Single Upload button */}
       <button
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
         onClick={handleButtonClick}
       >
-        {isUploading ? 'Uploading...' : 'Upload'}
+        Upload
       </button>
-
-      {/* Optional queue indicator */}
-      {uploadQueue.length > 0 && (
-        <p className="mt-2 text-gray-500">
-          Uploading in the background... ({uploadQueue.length} file(s) remaining)
-        </p>
-      )}
     </div>
   );
 }
