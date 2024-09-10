@@ -41,19 +41,12 @@ export default function PictureGridComponent({ page, setTotalItems }) {
     }
   }, []);
 
-  
-
   useEffect(() => {
     const fetchPictures = async () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
       try {
-        const response = await fetch(`${apiUrl}/api/pictures?page=${page}&listingStatus=0`, {
-          headers: {
-            'ngrok-skip-browser-warning': 'true', // Adding this header to skip the ngrok warning
-            'Content-Type': 'application/json',   // Content type header if needed
-          },
-        });
+        const response = await fetch(`${apiUrl}/api/pictures?page=${page}&listingStatus=0`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -79,7 +72,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/merge-patch+json',
-          'ngrok-skip-browser-warning': 'true',
+          
         },
         body: JSON.stringify({ listingStatus: 1 }),
       });

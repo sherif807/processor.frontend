@@ -10,12 +10,7 @@ export default function DismissedItemsPage({ page, setTotalItems }) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
       try {
-        const response = await fetch(`${apiUrl}/api/pictures?page=${page}&listingStatus=1`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true',  // Add this header to bypass ngrok warning
-          },
-        });
+        const response = await fetch(`${apiUrl}/api/pictures?page=${page}&listingStatus=1`);
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
