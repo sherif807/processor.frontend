@@ -41,6 +41,8 @@ export default function PictureGridComponent({ page, setTotalItems }) {
     }
   }, []);
 
+  
+
   useEffect(() => {
     const fetchPictures = async () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
