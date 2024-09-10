@@ -180,12 +180,12 @@ export default function Dashboard() {
               {currentPage === 'main' && <PictureGridComponent page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'capture' && <CaptureComponent capture={capture} />}
               {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} setCurrentPage={setCurrentPage}/>} {/* New Picture page */}
-              {currentPage === 'dismissed' && <DismissedItemsPage setTotalItems={setTotalItems} />}
+              {currentPage === 'dismissed' && <DismissedItemsPage page={ listingPage } setTotalItems={setTotalItems} />}
 
             </>
           )}
           <Pagination
-            currentPage={listingPage}
+            listingPage={listingPage}
             totalItems={totalItems}
             onPageChange={handlePageChange}
           />

@@ -1,14 +1,14 @@
-export default function Pagination({ currentPage, totalItems, onPageChange }) {
+export default function Pagination({ listingPage, totalItems, onPageChange }) {
     const itemsPerPage = 10; // Adjust as needed
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   
     const handlePrev = () => {
-      if (currentPage > 1) onPageChange(currentPage - 1);
+      if (listingPage > 1) onPageChange(listingPage - 1);
     };
   
     const handleNext = () => {
-      if (currentPage < totalPages) onPageChange(currentPage + 1);
+      if (listingPage < totalPages) onPageChange(listingPage + 1);
     };
   
     // Generate page numbers - logic can be adjusted as needed
@@ -38,8 +38,8 @@ export default function Pagination({ currentPage, totalItems, onPageChange }) {
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
-              <span className="font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> of{' '}
+              Showing <span className="font-medium">{(listingPage - 1) * itemsPerPage + 1}</span> to{' '}
+              <span className="font-medium">{Math.min(listingPage * itemsPerPage, totalItems)}</span> of{' '}
               <span className="font-medium">{totalItems}</span> results
             </p>
           </div>
@@ -51,7 +51,7 @@ export default function Pagination({ currentPage, totalItems, onPageChange }) {
                   key={number}
                   onClick={() => onPageChange(number)}
                   className={`cursor-default relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                    number === currentPage ? 'text-white bg-indigo-600' : 'text-gray-900 ring-1 ring-inset ring-gray-300'
+                    number === listingPage ? 'text-white bg-indigo-600' : 'text-gray-900 ring-1 ring-inset ring-gray-300'
                   } hover:bg-gray-50 focus:z-20 focus:outline-offset-0`}
                 >
                   {number}

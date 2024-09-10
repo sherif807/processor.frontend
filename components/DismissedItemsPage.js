@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LinkIcon, CheckIcon } from '@heroicons/react/24/outline'; // Importing CheckIcon for the bring-back functionality
 
-export default function DismissedItemsPage({ setTotalItems }) {
+export default function DismissedItemsPage({ page, setTotalItems }) {
   const [pictures, setPictures] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -10,10 +10,17 @@ export default function DismissedItemsPage({ setTotalItems }) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
       try {
-        const response = await fetch(`${apiUrl}/api/pictures?listingStatus=1`); // Fetch only dismissed items
+        const response = await fetch(`${apiUrl}/api/pictures?page=${page}&listingStatus=1`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',  // Add this header to bypass ngrok warning
+          },
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
+
         const jsonData = await response.json();
         setPictures(jsonData['hydra:member']);
         setTotalItems(jsonData['hydra:totalItems']);
@@ -25,8 +32,7 @@ export default function DismissedItemsPage({ setTotalItems }) {
     };
 
     fetchDismissedPictures();
-  }, [setTotalItems]);
-
+  }, [page, setTotalItems]);
   const bringBackPicture = async (id) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
