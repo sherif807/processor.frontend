@@ -54,16 +54,19 @@ export default function Dashboard() {
         body: formData
       });
   
+      if (multipleUploads !== true) {
+        setCurrentPage('main'); // Navigate back to the dashboard
+      }else{
+        setCurrentPage('picture'); // Stay on the picture upload
+      }
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
   
       const jsonData = await response.json();
-      console.log("here2", multipleUploads);
   
-      if (multipleUploads !== true) {
-        setCurrentPage('main'); // Navigate back to the dashboard
-      }
+
     } catch (error) {
       console.error('Upload error:', error);
     } finally {
