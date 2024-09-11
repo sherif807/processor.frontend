@@ -47,15 +47,12 @@ export default function Dashboard() {
     setLoading(true);
   
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file); // Append the file to the FormData
   
     try {
       const response = await fetch(`${apiUrl}/api/upload`, {
         method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json', // Add this to ensure JSON response
-        },
+        body: formData,  // No need to set 'Content-Type' here
       });
   
       if (!response.ok) {
@@ -63,7 +60,8 @@ export default function Dashboard() {
       }
   
       const jsonData = await response.json();
-      console.log("Upload success", jsonData);
+      console.log("Upload successful", jsonData);
+  
     } catch (error) {
       console.error('Upload error:', error);
     } finally {
