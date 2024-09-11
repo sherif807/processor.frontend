@@ -379,14 +379,26 @@ export function CompletedGraphsVisualization({ data = [], title , completedUrl})
 
   const graphData = formatGraphData(data);
 
-  // Helper to format the date as 'MMM d' (e.g., 'Jul 24')
-  const formatTickDate = (dateStr) => {
+// Helper to format the date as 'MMM d' (e.g., 'Jul 24')
+const formatTickDate = (dateStr) => {
+  try {
     const date = new Date(dateStr);
+
+    // Check if the date is valid before formatting
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date'); // Throw an error if the date is invalid
+    }
+
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
     }).format(date);
-  };
+  } catch (error) {
+    // Return a fallback value if an error occurs (invalid date or formatting issue)
+    return 'Invalid Date';
+  }
+};
+
 
   // Limit thumbnails shown based on visibility percentage
   const thumbnailLimit = Math.ceil((graphData.length * thumbnailVisibility) / 100);
@@ -613,14 +625,22 @@ export function LiveGraphsVisualization({ data = [], title, liveUrl}) {
 
   const graphData = formatGraphData(data);
 
-  // Helper to format the date as 'MMM d' (e.g., 'Jul 24')
-  const formatTickDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
-  };
+// Helper to format the date as 'MMM d' (e.g., 'Jul 24')
+const formatTickDate = (dateStr) => {
+  const date = new Date(dateStr);
+
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    return 'Invalid Date'; // Return fallback for invalid dates
+  }
+
+  // Format the date if it's valid
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+};
+
 
   // Limit thumbnails shown based on visibility percentage
   const thumbnailLimit = Math.ceil((graphData.length * thumbnailVisibility) / 100);
