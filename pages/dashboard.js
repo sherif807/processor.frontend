@@ -59,7 +59,7 @@ export default function Dashboard() {
       }
   
       const jsonData = await response.json();
-
+      console.log("here2", multipleUploads);
   
       if (multipleUploads !== true) {
         setCurrentPage('main'); // Navigate back to the dashboard
