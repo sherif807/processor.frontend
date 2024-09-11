@@ -45,13 +45,17 @@ export default function Dashboard() {
   const uploadPicture = async (file) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     setLoading(true);
+  
     const formData = new FormData();
     formData.append('file', file);
   
     try {
       const response = await fetch(`${apiUrl}/api/upload`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          'Accept': 'application/json', // Add this to ensure JSON response
+        },
       });
   
       if (!response.ok) {
@@ -59,11 +63,7 @@ export default function Dashboard() {
       }
   
       const jsonData = await response.json();
-      console.log("here2", multipleUploads);
-  
-      // if (multipleUploads !== true) {
-      //   setCurrentPage('main'); // Navigate back to the dashboard
-      // }
+      console.log("Upload success", jsonData);
     } catch (error) {
       console.error('Upload error:', error);
     } finally {
