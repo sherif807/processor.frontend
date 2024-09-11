@@ -37,7 +37,7 @@ export default function TopNavbar({setSidebarOpen, onSearchSubmit }){
             </button>
 
             {/* Separator */}
-            <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
+            <div className="h-6 w-px  lg:hidden" aria-hidden="true" />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
               <form className="relative flex flex-1"  method="GET" onSubmit={handleSearchSubmit}>
@@ -65,7 +65,7 @@ export default function TopNavbar({setSidebarOpen, onSearchSubmit }){
                 </button>
 
                 {/* Separator */}
-                <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true" />
+                <div className="hidden lg:block lg:h-6 lg:w-px " aria-hidden="true" />
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative">
