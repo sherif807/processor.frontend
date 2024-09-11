@@ -1,53 +1,35 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
-export default function PictureUploadComponent({ uploadPicture }) {
-  const fileInputRef = useRef(null);
-  const [isUploading, setIsUploading] = useState(false);
+export default function PictureUploadComponent({ uploadPicture, setCurrentPage }) {
+  const [file, setFile] = useState(null);
 
-  // Handle when a file is selected (from the camera)
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Start uploading and allow the user to continue
-      setIsUploading(true);  // Show upload state if needed
-      uploadPicture(file)
-        .then(() => {
-          setIsUploading(false);  // Hide upload state after done
-        })
-        .catch(() => {
-          setIsUploading(false);  // Hide upload state on error
-        });
-    }
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
   };
 
-  // Programmatically trigger the hidden file input
-  const handleButtonClick = () => {
-    fileInputRef.current.click(); // Open the camera
+  const handleUpload = () => {
+    if (file) {
+      uploadPicture(file);
+    } else {
+      alert("Please select a file first.");
+    }
   };
 
   return (
     <div className="p-4">
-      {/* Hidden file input */}
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        ref={fileInputRef} // Reference to trigger input programmatically
-        style={{ display: 'none' }} // Hide the file input
-        onChange={handleFileChange}
+      {/* Automatically opens the camera */}
+      <input 
+        type="file" 
+        accept="image/*" 
+        capture="environment" // This directly opens the camera
+        onChange={handleFileChange} 
       />
-
-      {/* Single Upload button */}
       <button
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-        onClick={handleButtonClick}
-        disabled={isUploading} // Disable button during upload if needed
+        onClick={handleUpload}
       >
-        {isUploading ? 'Uploading...' : 'Upload'}
+        Upload Picture
       </button>
-
-      {/* Optional upload status indicator */}
-      {isUploading && <p className="mt-2 text-gray-500">Uploading in the background...</p>}
     </div>
   );
 }
