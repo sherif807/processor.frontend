@@ -44,8 +44,6 @@ export default function Dashboard() {
 
   const uploadPicture = async (file) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    setLoading(true);
-  
     const formData = new FormData();
     formData.append('file', file); // Append the file to the FormData
   
@@ -64,10 +62,9 @@ export default function Dashboard() {
   
     } catch (error) {
       console.error('Upload error:', error);
-    } finally {
-      setLoading(false);
     }
   };
+  
   
 
   // const fetchData = async ({ page = 1 }) => {
