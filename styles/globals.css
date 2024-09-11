@@ -46,7 +46,7 @@ a {
   display: block;
 }
 
-
+/* 
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: light;
@@ -55,7 +55,7 @@ a {
     color: white;
     background: black;
   }
-}
+} */
 
 .no-scroll {
   overflow: hidden;
