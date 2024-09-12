@@ -171,7 +171,7 @@ function AnalyticsSlider({ analytics, item }) {
     <Slider {...settings}>
       <div key="history" className="p-0">
         {/* <Typography variant="h4" gutterBottom>History</Typography> */}
-        <CompletedDataAnalytics analytics={analytics} />
+        <CompletedDataAnalytics analytics={analytics} completedUrl = {item.links?.completedUrl} />
         <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} completedUrl = {item.links?.completedUrl}/>
       </div>
 

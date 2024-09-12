@@ -70,7 +70,7 @@ function displayValue(value, prefix = '', suffix = '', isGoodValue = false) {
 }
 
 
-export function SalesDataSectionCompleted({ preOwnedData, newData }) {
+export function SalesDataSectionCompleted({ preOwnedData, newData, completedUrl }) {
   const [popup, setPopup] = useState({});
 
   const preOwnedSoldPercentage = Math.round(
@@ -196,6 +196,14 @@ export function SalesDataSectionCompleted({ preOwnedData, newData }) {
       <div className="text-gray-500 font-medium">Last Sale</div>
       <div>{displayValue(preOwnedData?.daysSinceLastSale, '', 'days')}</div>
       <div>{displayValue(newData?.daysSinceLastSale, '', 'days')}</div>
+
+      <div className="text-gray-500 font-medium">Prove</div>
+      <div><a href={completedUrl} target="_blank" rel="noopener noreferrer">
+            <LinkIcon className="h-6 w-6 text-blue-500 hover:text-blue-700 cursor-pointer" />
+          </a></div>
+
+
+
 
 {/* 
       <div className="text-gray-500 font-medium">Freshness Score</div>
@@ -323,13 +331,13 @@ export function LiveDataAnalytics({ analytics}) {
   );
 }
 
-export function CompletedDataAnalytics({ analytics }) {
+export function CompletedDataAnalytics({ analytics, completedUrl }) {
   const completedNew = analytics?.ebayAnalytics?.completed['new'] || {};
   const completedPreOwned = analytics?.ebayAnalytics?.completed['pre-owned'] || {};
 
   return (
     <div className="grid gap-6  text-center py-4">
-      <SalesDataSectionCompleted preOwnedData={completedPreOwned} newData={completedNew} />
+      <SalesDataSectionCompleted preOwnedData={completedPreOwned} newData={completedNew} completedUrl={ completedUrl} />
     </div>
   );
 }
@@ -595,7 +603,7 @@ export function LiveGraphsVisualization({ data = [], title, liveUrl}) {
   }
 
   // Thumbnail visibility percentages (0%, 30%, 60%, 100%)
-  const [thumbnailVisibility, setThumbnailVisibility] = useState(30); // Start at 30%
+  const [thumbnailVisibility, setThumbnailVisibility] = useState(100); // Start at 30%
 
   // Toggle the thumbnail visibility percentage
   const toggleThumbnailVisibility = () => {

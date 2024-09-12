@@ -6,7 +6,8 @@ export const UploadProvider = ({ children }) => {
   const [uploadQueue, setUploadQueue] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
 
-  const uploadPicture = async (file) => {
+  // Upload single picture to the /api/upload endpoint
+  const uploadSinglePicture = async (file) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const formData = new FormData();
     formData.append('file', file);
@@ -22,9 +23,32 @@ export const UploadProvider = ({ children }) => {
       }
 
       const jsonData = await response.json();
-      console.log('Upload successful', jsonData);
+      console.log('Single picture upload successful', jsonData);
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('Single picture upload error:', error);
+    }
+  };
+
+  // Upload multi-product picture to the /api/upload-multiple-products endpoint
+  const uploadMultiPicture = async (file) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${apiUrl}/api/upload-multiple-products`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const jsonData = await response.json();
+      console.log('Multi-product picture upload successful', jsonData);
+    } catch (error) {
+      console.error('Multi-product picture upload error:', error);
     }
   };
 
@@ -32,11 +56,15 @@ export const UploadProvider = ({ children }) => {
     const processUploadQueue = async () => {
       if (isUploading || uploadQueue.length === 0) return;
 
-      const file = uploadQueue[0];
+      const { file, type } = uploadQueue[0]; // Get file and type from the queue
       setIsUploading(true);
 
       try {
-        await uploadPicture(file);
+        if (type === 'single') {
+          await uploadSinglePicture(file);
+        } else if (type === 'multi') {
+          await uploadMultiPicture(file);
+        }
       } catch (error) {
         console.error('Upload error:', error);
       } finally {
