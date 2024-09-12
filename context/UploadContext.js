@@ -40,16 +40,16 @@ export const UploadProvider = ({ children }) => {
       } catch (error) {
         console.error('Upload error:', error);
       } finally {
-        setUploadQueue((prevQueue) => prevQueue.slice(1));
-        setIsUploading(false);
+        setUploadQueue((prevQueue) => prevQueue.slice(1)); // Remove the file from the queue
+        setIsUploading(false); // Allow next upload to start
       }
     };
 
-    processUploadQueue();
+    processUploadQueue(); // Process uploads in the background
   }, [uploadQueue, isUploading]);
 
   return (
-    <UploadContext.Provider value={{ uploadQueue, setUploadQueue }}>
+    <UploadContext.Provider value={{ uploadQueue, setUploadQueue, isUploading }}>
       {children}
     </UploadContext.Provider>
   );
