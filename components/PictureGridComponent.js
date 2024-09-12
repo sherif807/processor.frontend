@@ -4,7 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CompletedDataAnalytics,LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization'; // Importing DataVisualization and GraphsVisualization
 import { useAbly } from '../hooks/useAbly';
-import { LinkIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { LinkIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Box, Typography } from '@mui/material';
 
 export default function PictureGridComponent({ page, setTotalItems }) {
@@ -66,6 +66,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
 
 
   const dismissPicture = async (id) => {
+    setPictures((prevPictures) => prevPictures.filter(p => p.id !== id));
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
       const response = await fetch(`${apiUrl}/api/pictures/${id}`, {
@@ -76,10 +77,11 @@ export default function PictureGridComponent({ page, setTotalItems }) {
         },
         body: JSON.stringify({ listingStatus: 1 }),
       });
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      setPictures((prevPictures) => prevPictures.filter(p => p.id !== id));
+
     } catch (error) {
       console.error('Dismiss error:', error);
     }
@@ -138,12 +140,16 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
   return (
     <div className="border-t border-gray-200 mt-4 relative">
       <button
-        className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none"
+        className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex items-center space-x-2"
         onClick={toggleExpand}
       >
-        {item.searchString}
-      </button>
+        <span>{item.searchString}</span>
 
+        {/* Conditionally render the CheckIcon if analytics exists */}
+        {analytics && (
+          <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />
+        )}
+      </button>
 
       {isExpanded && analytics && (
         <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">
@@ -155,7 +161,6 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
 }
 
 function AnalyticsSlider({ analytics, item }) {
-  console.log(item.prices.ebayCompletedData);
   const settings = {
     dots: true,
     infinite: false,
