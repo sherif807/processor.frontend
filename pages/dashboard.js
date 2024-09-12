@@ -58,7 +58,6 @@ export default function Dashboard() {
       }
   
       const jsonData = await response.json();
-      console.log("Upload successful", jsonData);
   
     } catch (error) {
       console.error('Upload error:', error);

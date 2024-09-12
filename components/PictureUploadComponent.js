@@ -5,11 +5,22 @@ export default function PictureUploadComponent({ uploadPicture }) {
   const [uploadQueue, setUploadQueue] = useState([]); // Queue to store files for uploading
   const [isUploading, setIsUploading] = useState(false); // State to track upload progress
 
+  // Helper to persist the upload queue to localStorage
+  const persistUploadQueue = (queue) => {
+    const filesArray = queue.map((file) => ({
+      name: file.name,
+      lastModified: file.lastModified,
+    }));
+    localStorage.setItem('uploadQueue', JSON.stringify(filesArray));
+  };
+
   // Handle when a file is selected (from the camera)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setUploadQueue((prevQueue) => [...prevQueue, file]); // Add the file to the upload queue
+      const updatedQueue = [...uploadQueue, file];
+      setUploadQueue(updatedQueue); // Add the file to the upload queue
+      persistUploadQueue(updatedQueue); // Save the updated queue to localStorage
     }
   };
 
@@ -17,6 +28,12 @@ export default function PictureUploadComponent({ uploadPicture }) {
   const handleButtonClick = () => {
     fileInputRef.current.click(); // Open the camera
   };
+
+  // Restore upload queue from localStorage on load
+  useEffect(() => {
+    const savedQueue = JSON.parse(localStorage.getItem('uploadQueue')) || [];
+    setUploadQueue(savedQueue);
+  }, []);
 
   // Process the upload queue
   useEffect(() => {
@@ -29,10 +46,12 @@ export default function PictureUploadComponent({ uploadPicture }) {
       try {
         await uploadPicture(file); // Upload the file
       } catch (error) {
-        console.error("Upload error:", error);
+        console.error('Upload error:', error);
       } finally {
         // After uploading, remove the file from the queue
-        setUploadQueue((prevQueue) => prevQueue.slice(1)); // Remove the uploaded file
+        const updatedQueue = uploadQueue.slice(1); // Remove the uploaded file
+        setUploadQueue(updatedQueue); // Update the queue
+        persistUploadQueue(updatedQueue); // Persist the updated queue
         setIsUploading(false); // Allow the next upload to start
       }
     };
