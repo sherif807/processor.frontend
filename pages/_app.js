@@ -1,7 +1,12 @@
-import '../styles/globals.css'
+import '../styles/globals.css';
+import { UploadProvider } from '../context/UploadContext'; // Import the UploadProvider
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <UploadProvider>
+      <Component {...pageProps} />
+    </UploadProvider>
+  );
 }
 
-export default MyApp
+export default MyApp;
