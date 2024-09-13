@@ -55,9 +55,7 @@ export const UploadProvider = ({ children }) => {
   useEffect(() => {
     const processUploadQueue = async () => {
 
-      // alert(`isUploading: ${isUploading}, Queue Length: ${uploadQueue.length}`);
-
-      // if (isUploading || uploadQueue.length === 0) return;
+      if (isUploading || uploadQueue.length === 0) return;
 
       const { file, type } = uploadQueue[0]; // Get file and type from the queue
       setIsUploading(true);
