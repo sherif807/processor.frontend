@@ -1,10 +1,11 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 
 export const UploadContext = createContext();
 
 export const UploadProvider = ({ children }) => {
   const [uploadQueue, setUploadQueue] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); // Still using this for UI purposes
+  const isUploadingRef = useRef(false); // Use this to track the upload state in real-time
 
   // Upload single picture to the /api/upload endpoint
   const uploadSinglePicture = async (file) => {
@@ -54,13 +55,13 @@ export const UploadProvider = ({ children }) => {
 
   useEffect(() => {
     const processUploadQueue = async () => {
+      alert(`isUploading: ${isUploadingRef.current}, Queue Length: ${uploadQueue.length}`);
 
-      alert(`isUploading: ${isUploading}, Queue Length: ${uploadQueue.length}`);
-
-      if (isUploading || uploadQueue.length === 0) return;
+      if (isUploadingRef.current || uploadQueue.length === 0) return;
 
       const { file, type } = uploadQueue[0]; // Get file and type from the queue
-      setIsUploading(true);
+      setIsUploading(true);  // Update state for UI rendering
+      isUploadingRef.current = true;  // Update ref immediately
 
       try {
         if (type === 'single') {
@@ -72,12 +73,13 @@ export const UploadProvider = ({ children }) => {
         console.error('Upload error:', error);
       } finally {
         setUploadQueue((prevQueue) => prevQueue.slice(1)); // Remove the file from the queue
-        setIsUploading(false); // Allow next upload to start
+        setIsUploading(false); // Update state for UI rendering
+        isUploadingRef.current = false; // Update ref immediately to allow next upload
       }
     };
 
     processUploadQueue(); // Process uploads in the background
-  }, [uploadQueue, isUploading]);
+  }, [uploadQueue]);
 
   return (
     <UploadContext.Provider value={{ uploadQueue, setUploadQueue, isUploading }}>
