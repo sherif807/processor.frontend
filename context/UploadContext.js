@@ -26,6 +26,7 @@ export const UploadProvider = ({ children }) => {
       const jsonData = await response.json();
       console.log('Single picture upload successful', jsonData);
     } catch (error) {
+      alert('Error uploading single picture');
       console.error('Single picture upload error:', error);
     }
   };
