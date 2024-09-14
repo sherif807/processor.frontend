@@ -1,63 +1,37 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useContext } from 'react';
+import { UploadContext } from '../context/UploadContext';
 
-export default function PictureUploadComponent({ uploadPicture }) {
+export default function PictureUploadComponent() {
   const fileInputRef = useRef(null);
-  const [uploadQueue, setUploadQueue] = useState([]); // Queue to store files for uploading
-  const [isUploading, setIsUploading] = useState(false); // State to track upload progress
+  const { uploadQueue, setUploadQueue, isUploading } = useContext(UploadContext); // Get the isUploading state
 
-  // Helper to persist the upload queue to localStorage
-  const persistUploadQueue = (queue) => {
-    const filesArray = queue.map((file) => ({
-      name: file.name,
-      lastModified: file.lastModified,
-    }));
-    localStorage.setItem('uploadQueue', JSON.stringify(filesArray));
-  };
-
-  // Handle when a file is selected (from the camera)
-  const handleFileChange = (e) => {
+  // Handle file change for single file upload
+  const handleSingleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const updatedQueue = [...uploadQueue, file];
-      setUploadQueue(updatedQueue); // Add the file to the upload queue
-      persistUploadQueue(updatedQueue); // Save the updated queue to localStorage
+      setUploadQueue((prevQueue) => [...prevQueue, { file, type: 'single' }]); // Add file with 'single' type
     }
   };
 
-  // Programmatically trigger the hidden file input
-  const handleButtonClick = () => {
-    fileInputRef.current.click(); // Open the camera
+  // Handle file change for multi-product upload
+  const handleMultiFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadQueue((prevQueue) => [...prevQueue, { file, type: 'multi' }]); // Add file with 'multi' type
+    }
   };
 
-  // Restore upload queue from localStorage on load
-  useEffect(() => {
-    const savedQueue = JSON.parse(localStorage.getItem('uploadQueue')) || [];
-    setUploadQueue(savedQueue);
-  }, []);
+  // Trigger single file input
+  const handleSingleUploadClick = () => {
+    fileInputRef.current.click(); // Open camera for single product upload
+    fileInputRef.current.onchange = handleSingleFileChange;
+  };
 
-  // Process the upload queue
-  useEffect(() => {
-    const processUploadQueue = async () => {
-      if (isUploading || uploadQueue.length === 0) return; // Prevent multiple uploads at the same time
-
-      const file = uploadQueue[0]; // Get the first file in the queue
-      setIsUploading(true); // Set upload in progress
-
-      try {
-        await uploadPicture(file); // Upload the file
-      } catch (error) {
-        console.error('Upload error:', error);
-      } finally {
-        // After uploading, remove the file from the queue
-        const updatedQueue = uploadQueue.slice(1); // Remove the uploaded file
-        setUploadQueue(updatedQueue); // Update the queue
-        persistUploadQueue(updatedQueue); // Persist the updated queue
-        setIsUploading(false); // Allow the next upload to start
-      }
-    };
-
-    processUploadQueue(); // Call the function to process the queue
-  }, [uploadQueue, isUploading, uploadPicture]);
+  // Trigger multi-product file input
+  const handleMultiUploadClick = () => {
+    fileInputRef.current.click(); // Open camera for multi-product upload
+    fileInputRef.current.onchange = handleMultiFileChange;
+  };
 
   return (
     <div className="p-4">
@@ -66,21 +40,28 @@ export default function PictureUploadComponent({ uploadPicture }) {
         type="file"
         accept="image/*"
         capture="environment"
-        ref={fileInputRef} // Reference to trigger input programmatically
-        style={{ display: 'none' }} // Hide the file input
-        onChange={handleFileChange}
+        ref={fileInputRef}
+        style={{ display: 'none' }}
       />
 
-      {/* Upload button */}
+      {/* Single Upload button */}
       <button
         className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-        onClick={handleButtonClick}
+        onClick={handleSingleUploadClick}
       >
         Upload
       </button>
 
-      {/* Optional queue indicator */}
-      {uploadQueue.length > 0 && (
+      {/* Multi-Product Upload button */}
+      <button
+        className="mt-2 px-4 py-2 bg-green-600 text-white rounded ml-2"
+        onClick={handleMultiUploadClick}
+      >
+        Upload Multi-Product Picture
+      </button>
+
+      {/* Show upload queue status but don't block the UI */}
+      {isUploading && (
         <p className="mt-2 text-gray-500">
           Uploading in the background... ({uploadQueue.length} file(s) remaining)
         </p>
