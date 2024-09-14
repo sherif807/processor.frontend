@@ -8,7 +8,6 @@ export const UploadProvider = ({ children }) => {
 
   // Upload single picture to the /api/upload endpoint
   const uploadSinglePicture = async (file) => {
-    alert('Uploading single picture...');
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const formData = new FormData();
     formData.append('file', file);
@@ -26,7 +25,6 @@ export const UploadProvider = ({ children }) => {
       const jsonData = await response.json();
       console.log('Single picture upload successful', jsonData);
     } catch (error) {
-      alert(error);
       console.error('Single picture upload error:', error);
     }
   };
