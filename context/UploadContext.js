@@ -8,6 +8,7 @@ export const UploadProvider = ({ children }) => {
 
   // Upload single picture to the /api/upload endpoint
   const uploadSinglePicture = async (file) => {
+    alert('Uploading single picture...');
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const formData = new FormData();
     formData.append('file', file);
