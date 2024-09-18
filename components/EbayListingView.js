@@ -54,7 +54,11 @@ export default function EbayListingView({ data }) {
                   <p>Price:</p>
                   <p
                     className={`font-semibold mt-1 ${
-                      listing.soldStatus === 1 ? 'text-green-600' : 'text-red-500'
+                      listing.soldStatus === 1
+                        ? 'text-green-600' // Sold - Green
+                        : listing.soldStatus === 0
+                        ? 'text-red-500'   // Not Sold - Red
+                        : ''               // Default color if soldStatus is null
                     }`}
                   >
                     ${listing.price}
