@@ -13,7 +13,8 @@ import {
 
 const navigation = [
   { name: 'Items', href: '#', icon: HomeIcon, current: true },
-  { name: 'Dismissed Items', href: '#', icon: ChartPieIcon, current: false }, // Add new item here
+  { name: 'Dismissed', href: '#', icon: ChartPieIcon, current: false }, // Add new item here
+  { name: 'Purchased', href: '#', icon: UsersIcon, current: false },
   { name: 'Picture', href: '#', icon: PhotoIcon, current: false }
 ];
 
@@ -38,13 +39,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, setChecked, setOu
       setOutOfStockFlag(true);
     }
 
-    if (itemName === 'Capture') {
-      setCurrentPage('capture');
-    } else if (itemName === 'Facebook') {
-      setCurrentPage('facebook');
+    if (itemName === 'Items') {
+      setCurrentPage('main');
     } else if (itemName === 'Picture') {
       setCurrentPage('picture');
-    } else if (itemName === 'Dismissed Items') {
+    } else if (itemName === 'Purchased') {
+      setCurrentPage('purchased');     
+    } else if (itemName === 'Dismissed') {
       setCurrentPage('dismissed'); // Set current page to 'dismissed' when clicked
     } else {
       setCurrentPage('main');

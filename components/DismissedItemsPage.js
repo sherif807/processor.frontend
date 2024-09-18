@@ -16,6 +16,7 @@ export default function DismissedItemsPage({ page, setTotalItems }) {
           throw new Error('Network response was not ok');
         }
 
+        console.log("here");
         const jsonData = await response.json();
         setPictures(jsonData['hydra:member']);
         setTotalItems(jsonData['hydra:totalItems']);

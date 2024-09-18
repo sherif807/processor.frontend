@@ -7,6 +7,7 @@ import CaptureComponent from '../components/CaptureComponent';
 import PictureUploadComponent from '../components/PictureUploadComponent';
 import PictureGridComponent from '../components/PictureGridComponent'; 
 import DismissedItemsPage from '../components/DismissedItemsPage';
+import PurchasedItemsPage from '../components/PurchasedItemsPage';
 
 
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
@@ -173,8 +174,9 @@ export default function Dashboard() {
               {/* {currentPage === 'main' && <MainContent data={data} />} */}
               {currentPage === 'main' && <PictureGridComponent page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'capture' && <CaptureComponent capture={capture} />}
-              {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} setCurrentPage={setCurrentPage}/>} {/* New Picture page */}
               {currentPage === 'dismissed' && <DismissedItemsPage page={ listingPage } setTotalItems={setTotalItems} />}
+              {currentPage === 'purchased' && <PurchasedItemsPage page={ listingPage } setTotalItems = { setTotalItems }/> }
+              {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} setCurrentPage={setCurrentPage}/>} {/* New Picture page */}
 
             </>
           )}

@@ -4,11 +4,19 @@ export default function EbayListingView({ data }) {
   const [itemsToShow, setItemsToShow] = useState(5); // Start by showing 5 items
 
   const showMoreItems = () => {
-    setItemsToShow((prev) => prev + 5); // Show 5 more items
+    if (itemsToShow + 5 <= data.length) {
+      setItemsToShow((prev) => prev + 5); // Show 5 more items
+    } else {
+      setItemsToShow(data.length); // If fewer than 5 items are left, show all
+    }
   };
 
   const showLessItems = () => {
-    setItemsToShow(5); // Reset to showing the first 5 items
+    if (itemsToShow - 5 >= 5) {
+      setItemsToShow((prev) => prev - 5); // Remove 5 items if more than 5 items are shown
+    } else {
+      setItemsToShow(5); // Ensure we never go below showing 5 items
+    }
   };
 
   return (
@@ -76,22 +84,25 @@ export default function EbayListingView({ data }) {
 
       {/* Show More / Show Less buttons */}
       {data.length > 5 && ( // Only show the buttons if there are more than 5 listings
-        <div className="flex justify-center mt-4">
-          {itemsToShow < data.length ? (
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={showMoreItems}
-            >
-              Show More
-            </button>
-          ) : (
-            <button
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-              onClick={showLessItems}
-            >
-              Show Less
-            </button>
-          )}
+        <div className="flex justify-center mt-4 space-x-4">
+          <button
+            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
+              itemsToShow >= data.length ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            onClick={showMoreItems}
+            disabled={itemsToShow >= data.length}
+          >
+            Show More
+          </button>
+          <button
+            className={`bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ${
+              itemsToShow <= 5 ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            onClick={showLessItems}
+            disabled={itemsToShow <= 5}
+          >
+            Show Less
+          </button>
         </div>
       )}
     </div>

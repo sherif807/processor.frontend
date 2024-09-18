@@ -46,11 +46,12 @@ export default function PictureGridComponent({ page, setTotalItems }) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
       try {
-        const response = await fetch(`${apiUrl}/api/pictures?&order[uploadedAt]=desc&listingStatus=0&page=${page}`);
+        const response = await fetch(`${apiUrl}/api/pictures?&order[uploadedAt]=desc&purchased=1&page=${page}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
+        console.log(jsonData);
         setPictures(jsonData['hydra:member']);
         setTotalItems(jsonData['hydra:totalItems']);
       } catch (error) {
@@ -95,7 +96,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
         headers: {
           'Content-Type': 'application/merge-patch+json',
         },
-        body: JSON.stringify({ purchased: true }),
+        body: JSON.stringify({ purchased: false }),
       });
 
       if (!response.ok) {

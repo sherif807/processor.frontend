@@ -357,7 +357,7 @@ export function CompletedGraphsVisualization({ data = [], title , completedUrl})
   }
 
   // Thumbnail visibility percentages (0%, 30%, 60%, 100%)
-  const [thumbnailVisibility, setThumbnailVisibility] = useState(30); // Start at 30%
+  const [thumbnailVisibility, setThumbnailVisibility] = useState(0); // Start at 30%
 
   // Toggle the thumbnail visibility percentage
   const toggleThumbnailVisibility = () => {
