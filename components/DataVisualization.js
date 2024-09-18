@@ -92,14 +92,16 @@ export function SalesDataSectionCompleted({ preOwnedData, newData, completedUrl 
       <div className="font-semibold">Pre-Owned</div>
       <div className="font-semibold">New</div>
 
+
+      <div className="text-gray-500 font-medium">Lowest Price</div>
+      <div>{displayValue(preOwnedData?.lowestSoldPrice, '$')}</div>
+      <div>{displayValue(newData?.lowestSoldPrice, '$')}</div>      
+
       {/* Labels + Data */}
       <div className="text-gray-500 font-medium">Average Price</div>
       <div>{displayValue(preOwnedData?.averageSoldPrice, '$')}</div>
       <div>{displayValue(newData?.averageSoldPrice, '$')}</div>
 
-      {/* <div className="text-gray-500 font-medium">Median Price</div>
-      <div>{displayValue(preOwnedData?.median, '$')}</div>
-      <div>{displayValue(newData?.median, '$')}</div> */}
 
       <div className="text-gray-500 font-medium">Percentage Sold</div>
       <div className="flex justify-center items-center space-x-2">
@@ -233,15 +235,17 @@ export function SalesDataSectionLive({ livePreOwned, liveNew }) {
       <div className="font-semibold">Pre-Owned</div>
       <div className="font-semibold">New</div>
 
+      <div className="text-gray-500 font-medium">Lowest Live Price</div>
+      <div>{displayValue(livePreOwned?.minLivePrice, '$')}</div>
+      <div>{displayValue(liveNew?.minLivePrice, '$')}</div>      
+
       {/* Labels + Data */}
       <div className="text-gray-500 font-medium">Average Live Price</div>
       <div>{displayValue(livePreOwned?.avgLivePrice, '$')}</div>
       <div>{displayValue(liveNew?.avgLivePrice, '$')}</div>
 
 
-      {/* <div className="text-gray-500 font-medium">Median Price</div>
-      <div>{displayValue(livePreOwned?.medianLive, '$')}</div>
-      <div>{displayValue(liveNew?.medianLive, '$')}</div> */}
+
 
 
 

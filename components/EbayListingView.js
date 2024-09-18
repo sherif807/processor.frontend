@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function EbayListingView({ data }) {
   const [itemsToShow, setItemsToShow] = useState(5); // Start by showing 5 items
+  const listRef = useRef(null); // Ref to scroll back to the list container
 
   const showMoreItems = () => {
     if (itemsToShow + 5 <= data.length) {
@@ -17,15 +18,19 @@ export default function EbayListingView({ data }) {
     } else {
       setItemsToShow(5); // Ensure we never go below showing 5 items
     }
+    // Scroll back to the top of the list
+    listRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div>
+    <div ref={listRef}> {/* Use this ref to scroll to the top of the list */}
       {/* Listing grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {data.slice(0, itemsToShow).map((listing, index) => (
-          <div key={index} className="border p-4 shadow-md flex space-x-4 items-start">
-            
+          <div
+            key={index}
+            className="border p-4 shadow-md flex space-x-4 items-start"
+          >
             {/* Image */}
             <a
               href={`https://www.ebay.com/itm/${listing.itemId}`}
@@ -39,7 +44,7 @@ export default function EbayListingView({ data }) {
                 className="w-16 h-16 object-cover"
               />
             </a>
-    
+
             {/* Title and details */}
             <div className="flex flex-col justify-start space-y-1">
               {/* Title */}
@@ -51,7 +56,7 @@ export default function EbayListingView({ data }) {
               >
                 {listing.title}
               </a>
-    
+
               {/* Row with condition, price, and shipping */}
               <div className="flex space-x-4 text-xs text-gray-500 mt-1">
                 <div>
