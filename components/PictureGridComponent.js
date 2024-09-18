@@ -3,9 +3,9 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CompletedDataAnalytics,LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization'; // Importing DataVisualization and GraphsVisualization
+import  EbayListingView from './EbayListingView';
 import { useAbly } from '../hooks/useAbly';
-import { LinkIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { Box, Typography } from '@mui/material';
+import { XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 export default function PictureGridComponent({ page, setTotalItems }) {
   const [pictures, setPictures] = useState([]);
@@ -176,15 +176,18 @@ function AnalyticsSlider({ analytics, item }) {
     <Slider {...settings}>
       <div key="history" className="p-0">
         {/* <Typography variant="h4" gutterBottom>History</Typography> */}
+
         <CompletedDataAnalytics analytics={analytics} completedUrl = {item.links?.completedUrl} />
+        <EbayListingView data={item.prices?.ebayCompletedData} />
         <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} completedUrl = {item.links?.completedUrl}/>
       </div>
 
       {/* Live Slide */}
       <div key="live" className="p-0">
         {/* <Typography variant="h4" gutterBottom></Typography> */}
-        <LiveDataAnalytics analytics={analytics}/>
 
+        <LiveDataAnalytics analytics={analytics}/>
+        <EbayListingView data={item.prices?.ebayLiveData} />
         <LiveGraphsVisualization data={item.prices?.ebayLiveData}  liveUrl = { item.links?.liveUrl}/>
       </div>
     </Slider>

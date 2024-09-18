@@ -10,7 +10,7 @@ export default function DismissedItemsPage({ page, setTotalItems }) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
       try {
-        const response = await fetch(`${apiUrl}/api/pictures?&order[uploadedAt]=desc&listingStatus=1`);
+        const response = await fetch(`${apiUrl}/api/pictures?&order[uploadedAt]=desc&listingStatus=1&page=${page}`);
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
