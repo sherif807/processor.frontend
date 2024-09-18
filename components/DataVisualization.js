@@ -62,7 +62,7 @@ function displayValue(value, prefix = '', suffix = '', isGoodValue = false) {
   return value ? (
     <span className="inline-flex items-center">
       {isGoodValue && <CheckIcon className="h-5 w-5 text-green-500" />} {/* Check mark with tiny margin */}
-      {prefix}{hairSpace}{Math.round(value)}{thinSpace}{suffix}
+      {prefix}{hairSpace}{value}{thinSpace}{suffix}
     </span>
   ) : (
     <XMarkIcon className="h-4 w-4 text-red-500 mx-auto" />

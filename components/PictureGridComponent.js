@@ -51,6 +51,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
+        console.log(jsonData);
         setPictures(jsonData['hydra:member']);
         setTotalItems(jsonData['hydra:totalItems']);
       } catch (error) {
@@ -171,6 +172,14 @@ export default function PictureGridComponent({ page, setTotalItems }) {
 function CatalogItem({ item, analytics, isFirst, onDismiss }) {
   const [isExpanded, setIsExpanded] = useState(isFirst);
 
+
+    // Extract prices for new and pre-owned items
+    const preOwnedPrice = analytics?.ebayAnalytics?.completed?.['pre-owned']?.avgPrice;
+    const newPrice = analytics?.ebayAnalytics?.completed?.new?.avgPrice;
+
+    const livePreOwnedPrice = analytics?.ebayAnalytics?.live?.['pre-owned']?.avgLivePrice;
+    const liveNewPrice = analytics?.ebayAnalytics?.live?.new?.avgLivePrice;
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -178,17 +187,30 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
   return (
     <div className="border-t border-gray-200 mt-4 relative">
       <button
-        className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex items-center space-x-2"
+        className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex flex-col space-y-2"
         onClick={toggleExpand}
       >
-        <span>{item.searchString}</span>
-
-        {/* Conditionally render the CheckIcon if analytics exists */}
-        {analytics && (
-          <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />
-        )}
+        <div className="flex items-center space-x-2">
+          {/* Item Title */}
+          <span>{item.searchString}</span>
+  
+          {/* Conditionally render the CheckIcon if analytics exists */}
+          {analytics && (
+            <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />
+          )}
+        </div>
+  
+        {/* Show New and Pre-owned prices under the title, aligned to the left and within the gray box */}
+        <div className="text-xs flex space-x-4">
+          {preOwnedPrice && (
+            <p className="text-yellow-600">Pre-Owned: ${Math.round(preOwnedPrice)}</p>
+          )}
+          {newPrice && (
+            <p className="text-green-600">New: ${Math.round(newPrice)}</p>
+          )}
+        </div>
       </button>
-
+  
       {isExpanded && analytics && (
         <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">
           <AnalyticsSlider analytics={analytics} item={item} />
@@ -196,6 +218,9 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
       )}
     </div>
   );
+  
+  
+  
 }
 
 function AnalyticsSlider({ analytics, item }) {
