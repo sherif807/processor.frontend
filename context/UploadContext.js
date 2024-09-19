@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import Compress from 'compress.js';
 
 export const UploadContext = createContext();
 
@@ -44,7 +45,7 @@ export const UploadProvider = ({ children }) => {
               resolve(blob); // Return the resized image blob
             },
             file.type,
-            0.9 // Image quality (for JPEG)
+            0.5 // Image quality (for JPEG)
           );
         };
       };
