@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect } from 'react';
-import Compress from 'compress.js';
 
 export const UploadContext = createContext();
 
