@@ -57,7 +57,7 @@ export default function DismissedItemsPage({ page, setTotalItems }) {
       {pictures.map((picture) => (
         <div key={picture.id} className="border rounded-md shadow-md p-4 relative">
           <img
-            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/pictures/${picture.filename}`}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_PATH_URL}/${picture.filename}`}
             alt={picture.filename}
             className="w-full h-auto object-cover"
           />
