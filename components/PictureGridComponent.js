@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { CompletedDataAnalytics, LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization'; // Importing DataVisualization and GraphsVisualization
+import { CompletedDataAnalytics, LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization';
 import EbayListingView from './EbayListingView';
 import { useAbly } from '../hooks/useAbly';
 import { XMarkIcon, CheckIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
@@ -135,7 +135,6 @@ export default function PictureGridComponent({ page, setTotalItems }) {
               <ShoppingBagIcon className="h-5 w-5" aria-hidden="true" />
             </button>
 
-
             {/* Dismiss button */}
             <button
               onClick={() => dismissPicture(picture.id)}
@@ -171,17 +170,80 @@ export default function PictureGridComponent({ page, setTotalItems }) {
 
 function CatalogItem({ item, analytics, isFirst, onDismiss }) {
   const [isExpanded, setIsExpanded] = useState(isFirst);
+  const [quantity, setQuantity] = useState(item.quantity || 1); // Initialize from item prop
+  const [whatnotStartingPrice, setWhatnotStartingPrice] = useState(item.whatnotStartingPrice || 0); // Initialize from item prop
+  const [searchString, setSearchString] = useState(item.searchString || ''); // Add searchString state
+
+  const [quantityChanged, setQuantityChanged] = useState(false); // Visual indicator for quantity change
+  const [priceChanged, setPriceChanged] = useState(false); // Visual indicator for price change
+  const [titleChanged, setTitleChanged] = useState(false); // Visual indicator for title change
+  const [isEditingTitle, setIsEditingTitle] = useState(false); // Track editing state
 
 
-    // Extract prices for new and pre-owned items
-    const preOwnedPrice = analytics?.ebayAnalytics?.completed?.['pre-owned']?.avgPrice;
-    const newPrice = analytics?.ebayAnalytics?.completed?.new?.avgPrice;
 
-    const livePreOwnedPrice = analytics?.ebayAnalytics?.live?.['pre-owned']?.avgLivePrice;
-    const liveNewPrice = analytics?.ebayAnalytics?.live?.new?.avgLivePrice;
+  // Check if whatnotStartingPrice is being fetched properly on reload
+  // useEffect(() => {
+  //   setWhatnotStartingPrice(item.whatnotStartingPrice || ''); // Ensure price is set from backend properly
+  // }, [item.whatnotStartingPrice]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleQuantityChange = async (e) => {
+    const newQuantity = parseInt(e.target.value);
+    setQuantity(newQuantity);
+    setQuantityChanged(true); // Show indicator when quantity changes
+    await patchCatalogItem({ quantity: newQuantity });
+
+    // Hide the checkmark after 2 seconds
+    setTimeout(() => {
+      setQuantityChanged(false);
+    }, 2000);
+  };
+
+  const handleStartingPriceBlur = async () => {
+    if (whatnotStartingPrice !== '') {
+      setPriceChanged(true); // Show indicator when price changes
+      await patchCatalogItem({ whatnotStartingPrice: parseFloat(whatnotStartingPrice) }); // Ensure float type
+  
+      // Hide the checkmark after 2 seconds
+      setTimeout(() => {
+        setPriceChanged(false);
+      }, 2000);
+    }
+  };
+  
+
+  const handleTitleBlur = async () => {
+    // Make sure to patch the new title to the backend if it has changed
+    if (searchString !== item.searchString) {
+      setTitleChanged(true); // Show indicator when title changes
+      await patchCatalogItem({ searchString }); // Update the backend
+      setTimeout(() => {
+        setTitleChanged(false); // Hide the checkmark after 2 seconds
+      }, 2000);
+    }
+    setIsEditingTitle(false); // Return to normal view
+  };
+
+  const patchCatalogItem = async (data) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+      const response = await fetch(`${apiUrl}/api/catalog_items/${item.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to patch catalog item');
+      }
+    } catch (error) {
+      console.error('Patch error:', error);
+    }
   };
 
   return (
@@ -190,27 +252,68 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
         className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex flex-col space-y-2"
         onClick={toggleExpand}
       >
-        <div className="flex items-center space-x-2">
-          {/* Item Title */}
-          <span>{item.searchString}</span>
-  
-          {/* Conditionally render the CheckIcon if analytics exists */}
-          {analytics && (
-            <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />
-          )}
+<div className="flex items-center space-x-2 w-full"> {/* Ensure the parent is full width */}
+  {isEditingTitle ? (
+    <input
+      type="text"
+      value={searchString}
+      onChange={(e) => setSearchString(e.target.value)} // Update searchString
+      onBlur={handleTitleBlur} // Call API on blur
+      className="border rounded p-1 text-sm flex-grow" // Use flex-grow to take available space
+      placeholder="Edit Title"
+      autoFocus
+    />
+  ) : (
+    <span onClick={() => setIsEditingTitle(true)} className="cursor-pointer">
+      {searchString}
+    </span>
+  )}
+  {/* Show checkmark when title is changed */}
+  {titleChanged && <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />}
+</div>
+
+
+
+
+        {/* Quantity dropdown */}
+        <div className="mt-2">
+          <label htmlFor={`quantity-${item.id}`} className="block text-xs text-gray-500">Quantity:</label>
+          <select
+            id={`quantity-${item.id}`}
+            value={quantity}
+            onChange={handleQuantityChange}
+            className="border rounded p-1 text-sm"
+            style={{ width: '100px' }}  // Adjust this width as needed
+          >
+            {[...Array(10).keys()].map((num) => (
+              <option key={num + 1} value={num + 1}>
+                {num + 1}
+              </option>
+            ))}
+          </select>
+
+          {/* Show checkmark when quantity is changed */}
+          {quantityChanged && <CheckIcon className="h-5 w-5 text-green-500 inline-block ml-2" aria-hidden="true" />}
         </div>
-  
-        {/* Show New and Pre-owned prices under the title, aligned to the left and within the gray box */}
-        <div className="text-xs flex space-x-4">
-          {preOwnedPrice && (
-            <p className="text-yellow-600">Pre-Owned: ${Math.round(preOwnedPrice)}</p>
-          )}
-          {newPrice && (
-            <p className="text-green-600">New: ${Math.round(newPrice)}</p>
-          )}
+
+        {/* Whatnot Starting Price */}
+        <div className="mt-2">
+          <label htmlFor={`price-${item.id}`} className="block text-xs text-gray-500">Starting Price:</label>
+          <input
+            type="number"
+            step="0.01"
+            id={`price-${item.id}`}
+            value={whatnotStartingPrice} // Raw value for price without forcing .00
+            onChange={(e) => setWhatnotStartingPrice(e.target.value)} // Update state but don't call API yet
+            onBlur={handleStartingPriceBlur} // Call API on blur
+            className="border rounded p-1 text-sm"
+          />
+
+          {/* Show checkmark when price is changed */}
+          {priceChanged && <CheckIcon className="h-5 w-5 text-green-500 inline-block ml-2" aria-hidden="true" />}
         </div>
       </button>
-  
+
       {isExpanded && analytics && (
         <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">
           <AnalyticsSlider analytics={analytics} item={item} />
@@ -218,9 +321,6 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
       )}
     </div>
   );
-  
-  
-  
 }
 
 function AnalyticsSlider({ analytics, item }) {
@@ -240,8 +340,6 @@ function AnalyticsSlider({ analytics, item }) {
         <EbayListingView data={item.prices?.ebayCompletedData} />
         <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} completedUrl={item.links?.completedUrl} />
       </div>
-
-      {/* Live Slide */}
       <div key="live" className="p-0">
         <LiveDataAnalytics analytics={analytics} />
         <EbayListingView data={item.prices?.ebayLiveData} />
