@@ -64,6 +64,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
     fetchPictures();
   }, [page, setTotalItems]);
 
+  // Function to dismiss the picture from the list
   const dismissPicture = async (id) => {
     setPictures((prevPictures) => prevPictures.filter(p => p.id !== id));
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -79,14 +80,17 @@ export default function PictureGridComponent({ page, setTotalItems }) {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
+
     } catch (error) {
       console.error('Dismiss error:', error);
     }
   };
 
+  // Function to handle the purchase action and dismiss the picture after marking as purchased
   const purchasePicture = async (id) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
+      // Patch request to mark the picture as purchased
       const response = await fetch(`${apiUrl}/api/pictures/${id}`, {
         method: 'PATCH',
         headers: {
@@ -99,7 +103,9 @@ export default function PictureGridComponent({ page, setTotalItems }) {
         throw new Error('Network response was not ok');
       }
 
+      // Dismiss the picture after purchase is confirmed
       dismissPicture(id);
+
     } catch (error) {
       console.error('Purchase error:', error);
     }
@@ -120,7 +126,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
           />
           <div className="absolute top-2 right-2 flex space-x-2">
 
-            <button
+          <button
               onClick={() => purchasePicture(picture.id)}
               className="bg-green-500 text-white rounded-full p-1 hover:bg-green-600 focus:outline-none"
               title="Mark as Purchased"
@@ -129,6 +135,7 @@ export default function PictureGridComponent({ page, setTotalItems }) {
               <ShoppingBagIcon className="h-5 w-5" aria-hidden="true" />
             </button>
 
+            {/* Dismiss button */}
             <button
               onClick={() => dismissPicture(picture.id)}
               className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none"
@@ -163,13 +170,25 @@ export default function PictureGridComponent({ page, setTotalItems }) {
 
 function CatalogItem({ item, analytics, isFirst, onDismiss }) {
   const [isExpanded, setIsExpanded] = useState(isFirst);
-  const [quantity, setQuantity] = useState(item.quantity || 1); 
-  const [whatnotStartingPrice, setWhatnotStartingPrice] = useState(item.whatnotStartingPrice || 0); 
-  const [itemCondition, setItemCondition] = useState(item.itemCondition || 1000); 
+  const [quantity, setQuantity] = useState(item.quantity || 1); // Initialize from item prop
+  const [whatnotStartingPrice, setWhatnotStartingPrice] = useState(item.whatnotStartingPrice || 0); // Initialize from item prop
+  const [searchString, setSearchString] = useState(item.searchString || ''); // Add searchString state
 
-  const [quantityChanged, setQuantityChanged] = useState(false);
-  const [priceChanged, setPriceChanged] = useState(false); 
+  const [quantityChanged, setQuantityChanged] = useState(false); // Visual indicator for quantity change
+  const [priceChanged, setPriceChanged] = useState(false); // Visual indicator for price change
+  const [titleChanged, setTitleChanged] = useState(false); // Visual indicator for title change
+  const [isEditingTitle, setIsEditingTitle] = useState(false); // Track editing state
+  const [itemCondition, setItemCondition] = useState(item.itemCondition || 1000); 
   const [conditionChanged, setConditionChanged] = useState(false); 
+
+
+
+
+
+  // Check if whatnotStartingPrice is being fetched properly on reload
+  // useEffect(() => {
+  //   setWhatnotStartingPrice(item.whatnotStartingPrice || ''); // Ensure price is set from backend properly
+  // }, [item.whatnotStartingPrice]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -178,9 +197,10 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
   const handleQuantityChange = async (e) => {
     const newQuantity = parseInt(e.target.value);
     setQuantity(newQuantity);
-    setQuantityChanged(true); 
+    setQuantityChanged(true); // Show indicator when quantity changes
     await patchCatalogItem({ quantity: newQuantity });
 
+    // Hide the checkmark after 2 seconds
     setTimeout(() => {
       setQuantityChanged(false);
     }, 2000);
@@ -188,14 +208,16 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
 
   const handleStartingPriceBlur = async () => {
     if (whatnotStartingPrice !== '') {
-      setPriceChanged(true); 
-      await patchCatalogItem({ whatnotStartingPrice: parseFloat(whatnotStartingPrice) });
-
+      setPriceChanged(true); // Show indicator when price changes
+      await patchCatalogItem({ whatnotStartingPrice: parseFloat(whatnotStartingPrice) }); // Ensure float type
+  
+      // Hide the checkmark after 2 seconds
       setTimeout(() => {
         setPriceChanged(false);
       }, 2000);
     }
   };
+  
 
   const handleConditionChange = async (e) => {
     const newCondition = parseInt(e.target.value);
@@ -206,6 +228,18 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
     setTimeout(() => {
       setConditionChanged(false);
     }, 2000);
+  };
+
+  const handleTitleBlur = async () => {
+    // Make sure to patch the new title to the backend if it has changed
+    if (searchString !== item.searchString) {
+      setTitleChanged(true); // Show indicator when title changes
+      await patchCatalogItem({ searchString }); // Update the backend
+      setTimeout(() => {
+        setTitleChanged(false); // Hide the checkmark after 2 seconds
+      }, 2000);
+    }
+    setIsEditingTitle(false); // Return to normal view
   };
 
   const patchCatalogItem = async (data) => {
@@ -233,12 +267,30 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
         className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex flex-col space-y-2"
         onClick={toggleExpand}
       >
-        {/* Title and Quantity Section */}
-        <div className="flex items-center space-x-2 w-full">
-          <span>{item.searchString}</span>
-        </div>
+<div className="flex items-center space-x-2 w-full"> {/* Ensure the parent is full width */}
+  {isEditingTitle ? (
+    <input
+      type="text"
+      value={searchString}
+      onChange={(e) => setSearchString(e.target.value)} // Update searchString
+      onBlur={handleTitleBlur} // Call API on blur
+      className="border rounded p-1 text-sm flex-grow" // Use flex-grow to take available space
+      placeholder="Edit Title"
+      autoFocus
+    />
+  ) : (
+    <span onClick={() => setIsEditingTitle(true)} className="cursor-pointer">
+      {searchString}
+    </span>
+  )}
+  {/* Show checkmark when title is changed */}
+  {titleChanged && <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />}
+</div>
 
-        {/* Quantity Dropdown */}
+
+
+
+        {/* Quantity dropdown */}
         <div className="mt-2">
           <label htmlFor={`quantity-${item.id}`} className="block text-xs text-gray-500">Quantity:</label>
           <select
@@ -246,7 +298,7 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
             value={quantity}
             onChange={handleQuantityChange}
             className="border rounded p-1 text-sm"
-            style={{ width: '100px' }}  
+            style={{ width: '100px' }}  // Adjust this width as needed
           >
             {[...Array(10).keys()].map((num) => (
               <option key={num + 1} value={num + 1}>
@@ -254,10 +306,11 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
               </option>
             ))}
           </select>
+
+          {/* Show checkmark when quantity is changed */}
           {quantityChanged && <CheckIcon className="h-5 w-5 text-green-500 inline-block ml-2" aria-hidden="true" />}
         </div>
 
-        {/* Item Condition Dropdown */}
         <div className="mt-2">
           <label htmlFor={`condition-${item.id}`} className="block text-xs text-gray-500">Item Condition:</label>
           <select
@@ -265,16 +318,16 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
             value={itemCondition}
             onChange={handleConditionChange}
             className="border rounded p-1 text-sm"
-            style={{ width: '100px' }}
+            style={{ width: '150px' }}  // Adjust this width as needed
           >
             <option value={1000}>New</option>
             <option value={1500}>Open Box</option>
             <option value={3000}>Used</option>
           </select>
           {conditionChanged && <CheckIcon className="h-5 w-5 text-green-500 inline-block ml-2" aria-hidden="true" />}
-        </div>
+        </div>        
 
-
+        {/* Whatnot Starting Price */}
       </button>
 
       {isExpanded && analytics && (
