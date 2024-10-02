@@ -150,15 +150,6 @@ const pendingPicture = async (id) => {
           <div className="absolute top-2 right-2 flex space-x-2">
 
 
-          <button
-  onClick={() => pendingPicture(picture.id)}
-  className="bg-yellow-500 text-white rounded-full p-1 hover:bg-yellow-600 focus:outline-none"
-  title="Mark as Pending"
-  style={{ zIndex: 10 }}
->
-  <ClockIcon className="h-5 w-5" aria-hidden="true" /> {/* You can use a pending-related icon */}
-</button>
-
 
           <button
               onClick={() => purchasePicture(picture.id)}
@@ -168,6 +159,18 @@ const pendingPicture = async (id) => {
             >
               <ShoppingBagIcon className="h-5 w-5" aria-hidden="true" />
             </button>
+
+
+          <button
+            onClick={() => pendingPicture(picture.id)}
+            className="bg-yellow-500 text-white rounded-full p-1 hover:bg-yellow-600 focus:outline-none"
+            title="Mark as Pending"
+            style={{ zIndex: 10 }}
+          >
+            <ClockIcon className="h-5 w-5" aria-hidden="true" /> {/* You can use a pending-related icon */}
+          </button>
+
+
 
             {/* Dismiss button */}
             <button
