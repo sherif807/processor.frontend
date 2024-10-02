@@ -1,34 +1,56 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import {
   CheckCircleIcon,
-  BeakerIcon,
-  ChartPieIcon,
-  Cog6ToothIcon,
-  HomeIcon,
-  UsersIcon,
   XMarkIcon,
-  PhotoIcon
+  PhotoIcon,
+  ClockIcon,
+  HomeIcon
 } from '@heroicons/react/24/outline';
 
+// Updated navigation, keeping placeholders for counts
 const navigation = [
-  { name: 'Items', href: '#', icon: HomeIcon, current: true },
-  { name: 'Dismissed', href: '#', icon: ChartPieIcon, current: false }, // Add new item here
-  { name: 'Purchased', href: '#', icon: UsersIcon, current: false },
-  { name: 'Picture', href: '#', icon: PhotoIcon, current: false }
-];
-
-const teams = [
-  { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-  { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-  { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
+  { name: 'Items', href: '#', icon: HomeIcon, current: true, count: 0 },
+  { name: 'Pending', href: '#', icon: ClockIcon, current: false, count: 0 },
+  { name: 'Listed', href: '#', icon: CheckCircleIcon, current: false, count: 0 },
+  { name: 'Dismissed', href: '#', icon: XMarkIcon, current: false, count: 0 },
+  { name: 'Picture', href: '#', icon: PhotoIcon, current: false, count: 0 }
 ];
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, setChecked, setOutOfStockFlag, setCurrentPage, multipleUploads, setMultipleUploads }) {
+  const [itemCounts, setItemCounts] = useState({
+    items: 0,
+    pending: 0,
+    dismissed: 0,
+    listed: 0
+  });
 
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(' ');
-  }
+  useEffect(() => {
+    // Fetch counts from your backend
+    const fetchCounts = async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      try {
+        const response = await fetch(`${apiUrl}/api/get-item-counts`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch item counts');
+        }
+        const data = await response.json();
+
+        // Update the state with the fetched counts
+        setItemCounts({
+          items: data.itemsCount || 0,
+          pending: data.pendingCount || 0,
+          dismissed: data.dismissedCount || 0,
+          listed: data.listedCount || 0
+        });
+      } catch (error) {
+        console.error('Error fetching item counts:', error);
+      }
+    };
+
+    fetchCounts();
+  }, []);
 
   const handleMenuClick = (itemName) => {
     if (itemName === 'Listed') {
@@ -43,10 +65,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, setChecked, setOu
       setCurrentPage('main');
     } else if (itemName === 'Picture') {
       setCurrentPage('picture');
-    } else if (itemName === 'Purchased') {
-      setCurrentPage('purchased');     
+    } else if (itemName === 'Listed') {
+      setCurrentPage('listed');
     } else if (itemName === 'Dismissed') {
-      setCurrentPage('dismissed'); // Set current page to 'dismissed' when clicked
+      setCurrentPage('dismissed');
+    } else if (itemName === 'Pending') {
+      setCurrentPage('pending');
     } else {
       setCurrentPage('main');
     }
@@ -54,11 +78,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, setChecked, setOu
     setSidebarOpen(false);
   };
 
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(' ');
+  }
+
   return (
     <>
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
-          {/* Mobile Sidebar */}
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -125,6 +152,27 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, setChecked, setOu
                                 >
                                   <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                   {item.name}
+                                  {/* Add badge to show the count */}
+                                  {item.name === 'Items' && itemCounts.items > 0 && (
+                                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                                      {itemCounts.items}
+                                    </span>
+                                  )}
+                                  {item.name === 'Pending' && itemCounts.pending > 0 && (
+                                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-yellow-500 rounded-full">
+                                      {itemCounts.pending}
+                                    </span>
+                                  )}
+                                  {item.name === 'Dismissed' && itemCounts.dismissed > 0 && (
+                                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                      {itemCounts.dismissed}
+                                    </span>
+                                  )}
+                                  {item.name === 'Listed' && itemCounts.listed > 0 && (
+                                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-600 rounded-full">
+                                      {itemCounts.listed}
+                                    </span>
+                                  )}
                                 </a>
                                 {item.name === 'Picture' && (
                                   <input
@@ -179,6 +227,27 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, setChecked, setOu
                         >
                           <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
                           {item.name}
+                          {/* Add badge to show the count */}
+                          {item.name === 'Items' && itemCounts.items > 0 && (
+                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                              {itemCounts.items}
+                            </span>
+                          )}
+                          {item.name === 'Pending' && itemCounts.pending > 0 && (
+                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-yellow-500 rounded-full">
+                              {itemCounts.pending}
+                            </span>
+                          )}
+                          {item.name === 'Dismissed' && itemCounts.dismissed > 0 && (
+                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                              {itemCounts.dismissed}
+                            </span>
+                          )}
+                          {item.name === 'Listed' && itemCounts.listed > 0 && (
+                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-600 rounded-full">
+                              {itemCounts.listed}
+                            </span>
+                          )}
                         </a>
                         {item.name === 'Picture' && (
                           <input

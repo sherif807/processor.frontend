@@ -5,7 +5,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { CompletedDataAnalytics, LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization';
 import EbayListingView from './EbayListingView';
 import { useAbly } from '../hooks/useAbly';
-import { XMarkIcon, CheckIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, CheckIcon, ShoppingBagIcon, ClockIcon } from '@heroicons/react/24/outline';
+import CommentsComponent from './CommentsComponent';
 
 export default function PictureGridComponent({ page, setTotalItems }) {
   const [pictures, setPictures] = useState([]);
@@ -111,6 +112,28 @@ export default function PictureGridComponent({ page, setTotalItems }) {
     }
   };
 
+  // Function to mark the picture as pending
+const pendingPicture = async (id) => {
+  setPictures((prevPictures) => prevPictures.filter(p => p.id !== id));
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  try {
+    const response = await fetch(`${apiUrl}/api/pictures/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/merge-patch+json',
+      },
+      body: JSON.stringify({ listingStatus: 2 }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+  } catch (error) {
+    console.error('Pending error:', error);
+  }
+};
+
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -125,6 +148,17 @@ export default function PictureGridComponent({ page, setTotalItems }) {
             className="w-full h-auto object-cover"
           />
           <div className="absolute top-2 right-2 flex space-x-2">
+
+
+          <button
+  onClick={() => pendingPicture(picture.id)}
+  className="bg-yellow-500 text-white rounded-full p-1 hover:bg-yellow-600 focus:outline-none"
+  title="Mark as Pending"
+  style={{ zIndex: 10 }}
+>
+  <ClockIcon className="h-5 w-5" aria-hidden="true" /> {/* You can use a pending-related icon */}
+</button>
+
 
           <button
               onClick={() => purchasePicture(picture.id)}
@@ -325,10 +359,14 @@ function CatalogItem({ item, analytics, isFirst, onDismiss }) {
             <option value={3000}>Used</option>
           </select>
           {conditionChanged && <CheckIcon className="h-5 w-5 text-green-500 inline-block ml-2" aria-hidden="true" />}
-        </div>        
+        </div>    
 
-        {/* Whatnot Starting Price */}
       </button>
+
+
+      <div className="col-span-3">
+          <CommentsComponent itemId={item.id} />
+        </div>
 
       {isExpanded && analytics && (
         <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">

@@ -11,6 +11,7 @@ import PurchasedItemsPage from '../components/PurchasedItemsPage';
 
 
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import PendingItemsPage from '../components/PendingItemsPage';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -175,6 +176,7 @@ export default function Dashboard() {
               {currentPage === 'main' && <PictureGridComponent page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'capture' && <CaptureComponent capture={capture} />}
               {currentPage === 'dismissed' && <DismissedItemsPage page={ listingPage } setTotalItems={setTotalItems} />}
+              {currentPage === 'pending' && <PendingItemsPage page={ listingPage } setTotalItems={setTotalItems} />}
               {currentPage === 'purchased' && <PurchasedItemsPage page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} setCurrentPage={setCurrentPage}/>} {/* New Picture page */}
 
