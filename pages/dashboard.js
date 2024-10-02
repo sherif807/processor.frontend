@@ -177,7 +177,7 @@ export default function Dashboard() {
               {currentPage === 'capture' && <CaptureComponent capture={capture} />}
               {currentPage === 'dismissed' && <DismissedItemsPage page={ listingPage } setTotalItems={setTotalItems} />}
               {currentPage === 'pending' && <PendingItemsPage page={ listingPage } setTotalItems={setTotalItems} />}
-              {currentPage === 'purchased' && <PurchasedItemsPage page={ listingPage } setTotalItems = { setTotalItems }/> }
+              {currentPage === 'listed' && <PurchasedItemsPage page={ listingPage } setTotalItems = { setTotalItems }/> }
               {currentPage === 'picture' && <PictureUploadComponent uploadPicture={uploadPicture} setCurrentPage={setCurrentPage}/>} {/* New Picture page */}
 
             </>

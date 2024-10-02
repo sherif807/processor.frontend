@@ -51,7 +51,6 @@ export default function PictureGridComponent({ page, setTotalItems }) {
           throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
-        console.log(jsonData);
         setPictures(jsonData['hydra:member']);
         setTotalItems(jsonData['hydra:totalItems']);
       } catch (error) {
