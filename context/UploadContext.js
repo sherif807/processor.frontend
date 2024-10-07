@@ -75,31 +75,44 @@ export const UploadProvider = ({ children }) => {
   useEffect(() => {
     const processUploadQueue = async () => {
       if (isUploading || uploadQueue.length === 0) return;
-
+  
       const { images } = uploadQueue[0]; // Only handling images here for presigned URL
       setIsUploading(true);
-
+  
       try {
         const imageKeys = [];
-
+  
         for (const imageData of images) {
           const { file } = imageData;
-
+  
           if (!isValidImage(file)) {
             alert('Invalid file type: Only images are allowed.');
             setUploadQueue((prevQueue) => prevQueue.slice(1));
             setIsUploading(false);
             return;
           }
-
+  
           // Resize image and get the presigned URL
           const resizedFile = await resizeImage(file);
-          const { preSignedUrl, fileName } = await getPreSignedUrl(resizedFile);
-          
-          // Instead of uploading immediately, store the fileName
-          imageKeys.push(fileName); 
+          const { preSignedUrl, fileName, fileType } = await getPreSignedUrl(resizedFile);
+  
+          // Now, upload the file using the pre-signed URL
+          const uploadResponse = await fetch(preSignedUrl, {
+            method: 'PUT', // Use PUT to upload the file to S3
+            headers: {
+              'Content-Type': fileType, // Set the correct content type
+            },
+            body: resizedFile, // Send the actual resized file
+          });
+  
+          if (!uploadResponse.ok) {
+            throw new Error('Failed to upload the image to S3');
+          }
+  
+          // Store the S3 key or fileName after a successful upload
+          imageKeys.push(fileName);
         }
-
+  
         setPreparedImages(imageKeys); // Store the prepared image keys
       } catch (error) {
         console.error('Upload error:', error);
@@ -108,9 +121,10 @@ export const UploadProvider = ({ children }) => {
         setIsUploading(false);
       }
     };
-
+  
     processUploadQueue();
   }, [uploadQueue, isUploading]);
+  
 
   return (
     <UploadContext.Provider value={{ uploadQueue, setUploadQueue, isUploading, preparedImages }}>
