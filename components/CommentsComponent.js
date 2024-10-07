@@ -118,8 +118,9 @@ export default function CommentsComponent({ itemId }) {
 
   // Handle Enter key for submitting a new comment
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSendComment();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();  // Prevent default action when only Enter is pressed
+      handleSendComment();  // Send the comment
     }
   };
 
@@ -131,7 +132,6 @@ export default function CommentsComponent({ itemId }) {
     return `${day} at ${time}`;
   };
 
-  
   return (
     <div className="mt-2">
       {/* Only render comments section if there are comments */}
@@ -187,14 +187,14 @@ export default function CommentsComponent({ itemId }) {
           type="text"
           className="flex-grow border rounded p-1 text-sm"
           value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyPress={handleKeyPress} // Handle Enter key press
+          // onChange={(e) => setNewComment(e.target.value)}
+          // onKeyPress={handleKeyPress} // Handle Enter key press
           placeholder="Type your message..."
           disabled={loading}
         />
         <button
           className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
-          onClick={handleSendComment}
+          // onClick={handleSendComment}
           disabled={loading}
         >
           Send

@@ -1,124 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import GoogleShoppingPricesStatisticsBox from './GoogleShoppingPricesStatisticsBox';
-import EbaySoldPricesStatisticsBox from './EbaySoldPricesStatisticsBox';
-import AmazonPricingComponent from './AmazonPricingComponent';
-import RelatedItemsList from './RelatedItemsList';
-import CatalogItemHeader from './CatalogItemHeader';
-import FacebookItemList from './FacebookItemsList';
+import { useState } from 'react';
+import { CheckIcon } from '@heroicons/react/24/outline';
+import CombinedItemForm from './CombinedItemForm'; // Import the CombinedItemForm
+import AnalyticsSlider from './AnalyticsSlider'; // Import AnalyticsSlider
 
+export default function CatalogItem({ item, isFirst, analytics }) {
+  const [isExpanded, setIsExpanded] = useState(isFirst);
+  const [searchString, setSearchString] = useState(item.searchString || '');
+  const [titleChanged, setTitleChanged] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
-
-const CatalogItem = ({ catalogItem,updateRelatedItem,updateFacebookItem, updateCatalogItem, showMoreItems, showLessItems, displayedItems, handleOpenLightBox, handleRefreshRelatedItems, getHistoricalPrices, pricingData, listProduct,listFacebookProduct, prepareItem, getEbayDescription, handleOpenLightBoxForGoogle, isLoading, markCatalogItemChecked, listAmazonProduct, handleOpenLightBoxForUpcData, setUpcData, selectedUpc, matchAmazon}) => {
-  
-  const [filterCondition, setFilterCondition] = useState(null);
-
-  const isRefurbishedCondition = condition => condition.includes('Refurbished');
-  const [showPrices, setShowPrices] = useState(false);
-
-
-  const [selectedAsin, setSelectedAsin] = useState(null);
-  const handleProductSelect = (asin) => {
-    setSelectedAsin(asin);
-  };
-  
-  const handleFilter = (condition) => {
-      setFilterCondition(condition);
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
   };
 
+  const handleTitleBlur = async () => {
+    if (searchString !== item.searchString) {
+      setTitleChanged(true);
+      await patchCatalogItem({ searchString });
+      setTimeout(() => {
+        setTitleChanged(false);
+      }, 2000);
+    }
+    setIsEditingTitle(false);
+  };
 
+  const patchCatalogItem = async (data) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+      await fetch(`${apiUrl}/api/catalog_items/${item.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.error('Patch error:', error);
+    }
+  };
 
-
-
-  const filteredItems = filterCondition === null
-      ? catalogItem.relatedItems
-      : filterCondition === 'Refurbished'
-          ? catalogItem.relatedItems?.filter(item => isRefurbishedCondition(item.readableItemCondition))
-          : catalogItem.relatedItems?.filter(item => item.readableItemCondition === filterCondition);
-
-  
-  
-          const uniqueConditions = [...new Set(catalogItem.relatedItems?.map(item => 
-            isRefurbishedCondition(item.readableItemCondition) ? 'Refurbished' : item.readableItemCondition
-        ))].filter((condition, index, self) => self.indexOf(condition) === index); // Remove duplicates
-        
-
-        const conditionCounts = catalogItem.relatedItems?.reduce((acc, item) => {
-          const condition = isRefurbishedCondition(item.readableItemCondition) ? 'Refurbished' : item.readableItemCondition;
-          acc[condition] = (acc[condition] || 0) + 1;
-          return acc;
-      }, {});
-
-      const handleGetHistoricalPrices =  async () =>  {
-        await getHistoricalPrices(catalogItem);
-        // setShowPrices(true); // Toggle the display of the prices
-      };           
-      
-
-      
-      return (
-        <div key={catalogItem.id} className="bg-white shadow-xl rounded-lg p-6 mb-8 border border-gray-200">
-          <CatalogItemHeader
-            catalogItem={catalogItem}
-            handleOpenLightBox={handleOpenLightBox}
-            handleRefreshRelatedItems={handleRefreshRelatedItems}
-            uniqueConditions={uniqueConditions}
-            handleFilter={handleFilter}
-            conditionCounts={conditionCounts}
-            getHistoricalPrices={handleGetHistoricalPrices}
-            prepareItem={prepareItem}
-            updateCatalogItem={updateCatalogItem}
-            isLoading={isLoading}
-            markCatalogItemChecked={markCatalogItemChecked}
-            handleOpenLightBoxForUpcData={handleOpenLightBoxForUpcData}
-            setUpcData={setUpcData}
-            matchAmazon={matchAmazon}
-          />
-          <div className="flex">
-            {/* <div className="w-1/2">
-              <RelatedItemsList
-                catalogItem={{ ...catalogItem, relatedItems: filteredItems }}
-                updateRelatedItem={updateRelatedItem}
-                displayedItems={displayedItems}
-                showMoreItems={showMoreItems}
-                showLessItems={showLessItems}
-                listProduct={listProduct}
-                getEbayDescription={getEbayDescription}
-                selectedAsin={selectedAsin}
-                listAmazonProduct={listAmazonProduct}
-              />
-            </div> */}
-            <div className="w-1/2">
-              <FacebookItemList
-                catalogItem={{ ...catalogItem, relatedItems: filteredItems }}
-                updateFacebookItem={updateFacebookItem}
-                displayedItems={displayedItems}
-                showMoreItems={showMoreItems}
-                showLessItems={showLessItems}
-                listFacebookProduct={listFacebookProduct}
-                getEbayDescription={getEbayDescription}
-                selectedAsin={selectedAsin}
-                listAmazonProduct={listAmazonProduct}
-              />
-            </div>
-              <div className="flex w-1/2">
-                <div className="w-1/2">
-                  {catalogItem.prices && <GoogleShoppingPricesStatisticsBox  pricingData={catalogItem.prices} handleOpenLightBoxForGoogle={handleOpenLightBoxForGoogle}/>}
-                  
-                </div>
-                <div className="w-1/2">
-                  {catalogItem.amazonProperties && <AmazonPricingComponent amazonProperties={catalogItem.amazonProperties} amazonPricing={catalogItem.amazonPricing} onProductSelect={handleProductSelect}/>}
-                </div>                
-                <div className="w-1/2">
-                {catalogItem.prices && <EbaySoldPricesStatisticsBox pricingData={catalogItem.prices}/>}
-                </div>
-              </div>
-          </div>
+  return (
+    <div className="border-t border-gray-200 mt-4 relative">
+      <button
+        className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex flex-col space-y-2"
+        onClick={toggleExpand}
+      >
+        <div className="flex items-center space-x-2 w-full">
+          {isEditingTitle ? (
+            <input
+              type="text"
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+              onBlur={handleTitleBlur}
+              className="border rounded p-1 text-sm flex-grow"
+              placeholder="Edit Title"
+              autoFocus
+            />
+          ) : (
+            <span onClick={() => setIsEditingTitle(true)} className="cursor-pointer">
+              {searchString}
+            </span>
+          )}
+          {titleChanged && <CheckIcon className="h-5 w-5 text-green-500" aria-hidden="true" />}
         </div>
-      );
-      
-    };
-    
+      </button>
 
+      {/* CombinedItemForm to handle quantity, condition, and comments */}
+      <CombinedItemForm
+        itemId={item.id}
+        initialQuantity={item.quantity}
+        initialCondition={item.itemCondition}
+        comments={item.conversation || []} // Assuming you pass the conversation array as comments
+      />
 
-
-export default CatalogItem;
+      {isExpanded && analytics && (
+        <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">
+          <AnalyticsSlider analytics={analytics} item={item} />
+        </div>
+      )}
+    </div>
+  );
+}

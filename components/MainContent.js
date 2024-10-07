@@ -4,7 +4,7 @@ import useDisplayedItems from '../hooks/useDisplayedItems';
 import useRefreshRelatedItems from '../hooks/useRefreshRelatedItems';
 import useProductForm from '../hooks/useProductForm';
 import useAmazon from '../hooks/useAmazon';
-import CatalogItem from '../components/CatalogItem';
+import CatalogItem from './OldCatalogItem';
 import LightBox from '../components/Lightbox';
 import ProductForm from '../components/ProductForm';
 import UpcImageSelector from '../components/UpcImageSelector';
