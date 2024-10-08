@@ -1,6 +1,5 @@
 import { useRef, useContext, useState } from 'react';
 import { UploadContext } from '../context/UploadContext';
-import CombinedItemForm from './CombinedItemForm';
 
 export default function PictureUploadComponent() {
   const fileInputRef = useRef(null);
@@ -14,23 +13,28 @@ export default function PictureUploadComponent() {
     notes: ''
   });
 
+  // Handle file change event for selecting multiple images
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files); // Convert file list to array
     const newImages = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
+
     setSelectedImages((prevImages) => [...prevImages, ...newImages]);
-    setUploadQueue((prevQueue) => [...prevQueue, { images: newImages }]);
+    
+    // Add all images to upload queue
+    setUploadQueue((prevQueue) => [...prevQueue, ...newImages]);
   };
 
   const handleUploadClick = (type) => {
     setUploadType(type);
-    fileInputRef.current.click();
+    fileInputRef.current.click(); // Trigger the file input
   };
 
   const handleRemoveImage = (index) => {
     setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setUploadQueue((prevQueue) => prevQueue.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -69,6 +73,7 @@ export default function PictureUploadComponent() {
       const responseData = await response.json();
       console.log('Backend Response:', responseData);
 
+      // Reset states after successful upload
       setSelectedImages([]);
       setFormInputs({ quantity: 1, condition: 1000, notes: '' });
       setUploadQueue([]);
