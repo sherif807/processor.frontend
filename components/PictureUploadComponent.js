@@ -1,5 +1,6 @@
 import { useRef, useContext, useState } from 'react';
 import { UploadContext } from '../context/UploadContext';
+import CombinedItemForm from './CombinedItemForm';
 
 export default function PictureUploadComponent() {
   const fileInputRef = useRef(null);
@@ -68,7 +69,6 @@ export default function PictureUploadComponent() {
       const responseData = await response.json();
       console.log('Backend Response:', responseData);
 
-      // Reset form inputs without reloading the page
       setSelectedImages([]);
       setFormInputs({ quantity: 1, condition: 1000, notes: '' });
       setUploadQueue([]);
@@ -117,7 +117,6 @@ export default function PictureUploadComponent() {
             className="border rounded p-1 text-sm"
             value={formInputs.quantity}
             onChange={(e) => setFormInputs((prev) => ({ ...prev, quantity: e.target.value }))}
-            style={{ width: '100px' }}
           >
             {[...Array(10).keys()].map((num) => (
               <option key={num + 1} value={num + 1}>
@@ -133,7 +132,6 @@ export default function PictureUploadComponent() {
             className="border rounded p-1 text-sm"
             value={formInputs.condition}
             onChange={(e) => setFormInputs((prev) => ({ ...prev, condition: e.target.value }))}
-            style={{ width: '100px' }}
           >
             <option value={1000}>New</option>
             <option value={1500}>Open Box</option>
