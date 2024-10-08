@@ -4,10 +4,17 @@ import CombinedItemForm from './CombinedItemForm'; // Import the CombinedItemFor
 import AnalyticsSlider from './AnalyticsSlider'; // Import AnalyticsSlider
 
 export default function CatalogItem({ item, isFirst, analytics }) {
+  // Debugging to check item structure
+  console.log('CatalogItem data:', item);
+
+  // Use item values with fallbacks
   const [isExpanded, setIsExpanded] = useState(isFirst);
   const [searchString, setSearchString] = useState(item.searchString || '');
   const [titleChanged, setTitleChanged] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [quantity, setQuantity] = useState(item.quantity || 1); // Fallback to 1 if undefined
+  const [condition, setCondition] = useState(item.itemCondition || 1000); // Fallback to 1000 if undefined
+  const [notes, setNotes] = useState(item.notes || ''); // Fallback to empty string if undefined
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -65,12 +72,14 @@ export default function CatalogItem({ item, isFirst, analytics }) {
         </div>
       </button>
 
-      {/* CombinedItemForm to handle quantity, condition, and comments */}
+      {/* CombinedItemForm to handle quantity, condition, and notes */}
       <CombinedItemForm
-        itemId={item.id}
-        initialQuantity={item.quantity}
-        initialCondition={item.itemCondition}
-        comments={item.conversation || []} // Assuming you pass the conversation array as comments
+        initialQuantity={quantity}
+        initialCondition={condition}
+        initialNotes={notes}
+        onQuantityChange={(newQuantity) => setQuantity(newQuantity)}
+        onConditionChange={(newCondition) => setCondition(newCondition)}
+        onNotesChange={(newNotes) => setNotes(newNotes)}
       />
 
       {isExpanded && analytics && (
