@@ -5,7 +5,7 @@ export const UploadContext = createContext();
 export const UploadProvider = ({ children }) => {
   const [uploadQueue, setUploadQueue] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [preparedImages, setPreparedImages] = useState([]); // Store the image keys after presigned URL
+  const [preparedImages, setPreparedImages] = useState([]); // Store accumulated image keys as state
 
   const supportedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
@@ -80,8 +80,8 @@ export const UploadProvider = ({ children }) => {
       setIsUploading(true);
   
       try {
-        const imageKeys = [];
-  
+        const imageKeys = [...preparedImages];  // Accumulate previously uploaded images
+
         for (const imageData of images) {
           const { file } = imageData;
   
@@ -112,10 +112,8 @@ export const UploadProvider = ({ children }) => {
           // Store the S3 key or fileName after a successful upload
           imageKeys.push(fileName);
         }
-
-        alert(imageKeys);
   
-        setPreparedImages(imageKeys); // Store the prepared image keys
+        setPreparedImages(imageKeys); // Update the prepared image keys state
       } catch (error) {
         console.error('Upload error:', error);
       } finally {
@@ -125,11 +123,14 @@ export const UploadProvider = ({ children }) => {
     };
   
     processUploadQueue();
-  }, [uploadQueue, isUploading]);
-  
+  }, [uploadQueue, isUploading, preparedImages]);
+
+  const clearPreparedImages = () => {
+    setPreparedImages([]); // Clear prepared images after submission
+  };
 
   return (
-    <UploadContext.Provider value={{ uploadQueue, setUploadQueue, isUploading, preparedImages }}>
+    <UploadContext.Provider value={{ uploadQueue, setUploadQueue, isUploading, preparedImages, clearPreparedImages }}>
       {children}
     </UploadContext.Provider>
   );
