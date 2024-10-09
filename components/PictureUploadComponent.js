@@ -98,19 +98,22 @@ export default function PictureUploadComponent() {
         onChange={handleFileChange}
       />
 
-      <button
-        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-        onClick={() => handleUploadClick('single')}
-      >
-        Upload Images
-      </button>
+
 
       <button
         className="mt-2 ml-4 px-4 py-2 bg-green-600 text-white rounded"
         onClick={handleCameraClick}
       >
-        📷 Open Camera
+         Open Camera
       </button>
+
+
+      {/* <button
+        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+        onClick={() => handleUploadClick('single')}
+      >
+        Select Images
+      </button> */}
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         {selectedImages.map((imageData, index) => (
