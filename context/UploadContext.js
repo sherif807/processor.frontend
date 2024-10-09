@@ -112,6 +112,8 @@ export const UploadProvider = ({ children }) => {
           // Store the S3 key or fileName after a successful upload
           imageKeys.push(fileName);
         }
+
+        alert(imageKeys);
   
         setPreparedImages(imageKeys); // Store the prepared image keys
       } catch (error) {
