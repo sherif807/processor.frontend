@@ -1,10 +1,9 @@
 import { useRef, useContext, useState } from 'react';
 import { UploadContext } from '../context/UploadContext';
-import { CameraIcon } from '@heroicons/react/24/outline';
+import CombinedItemForm from './CombinedItemForm';
 
 export default function PictureUploadComponent() {
   const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null); // Ref for camera input
   const { uploadQueue, setUploadQueue, isUploading, preparedImages, clearPreparedImages } = useContext(UploadContext);
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadType, setUploadType] = useState('single');
@@ -29,10 +28,6 @@ export default function PictureUploadComponent() {
   const handleUploadClick = (type) => {
     setUploadType(type);
     fileInputRef.current.click();
-  };
-
-  const handleCameraClick = () => {
-    cameraInputRef.current.click(); // Trigger the camera input
   };
 
   const handleRemoveImage = (index) => {
@@ -94,35 +89,12 @@ export default function PictureUploadComponent() {
         onChange={handleFileChange}
       />
 
-      {/* Camera input to directly access the camera */}
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment" // This will trigger the camera directly on mobile
-        ref={cameraInputRef}
-        style={{ display: 'none' }}
-        onChange={handleFileChange}
-      />
-
-      <div className="flex space-x-2">
-
       <button
-          className="mt-2 px-4 py-2 bg-green-600 text-white rounded flex items-center"
-          onClick={handleCameraClick}
-        >
-          <CameraIcon className="h-5 w-5 mr-1" />
-          Open Camera
-        </button>
-
-        <button
-          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={() => handleUploadClick('single')}
-        >
-          Select Images
-        </button>
-
-
-      </div>
+        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+        onClick={() => handleUploadClick('single')}
+      >
+        Upload Images
+      </button>
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         {selectedImages.map((imageData, index) => (
