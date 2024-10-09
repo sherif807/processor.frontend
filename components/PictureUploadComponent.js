@@ -1,10 +1,9 @@
 import { useRef, useContext, useState } from 'react';
 import { UploadContext } from '../context/UploadContext';
-import CombinedItemForm from './CombinedItemForm';
 
 export default function PictureUploadComponent() {
   const fileInputRef = useRef(null);
-  const { uploadQueue, setUploadQueue, isUploading, preparedImages, clearPreparedImages } = useContext(UploadContext);
+  const { preparedImages, uploadImage, clearPreparedImages } = useContext(UploadContext);
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadType, setUploadType] = useState('single');
 
@@ -20,13 +19,22 @@ export default function PictureUploadComponent() {
       file,
       preview: URL.createObjectURL(file),
     }));
+
     setSelectedImages((prevImages) => [...prevImages, ...newImages]);
-    setUploadQueue((prevQueue) => [...prevQueue, { images: newImages }]);
-    clearPreparedImages();
+
+    // Upload each image immediately
+    newImages.forEach((image) => {
+      uploadImage(image.file);
+    });
   };
 
   const handleUploadClick = (type) => {
     setUploadType(type);
+    fileInputRef.current.click();
+  };
+
+  const handleCameraClick = () => {
+    fileInputRef.current.setAttribute('capture', 'environment'); // Directly opens the camera
     fileInputRef.current.click();
   };
 
@@ -72,7 +80,7 @@ export default function PictureUploadComponent() {
 
       setSelectedImages([]);
       setFormInputs({ quantity: 1, condition: 1000, notes: '' });
-      setUploadQueue([]);
+      clearPreparedImages(); // Clear the uploaded images
     } catch (error) {
       console.error('Error submitting data:', error);
     }
@@ -83,6 +91,7 @@ export default function PictureUploadComponent() {
       <input
         type="file"
         accept="image/*"
+        capture="environment"  // Opens camera by default on mobile
         multiple
         ref={fileInputRef}
         style={{ display: 'none' }}
@@ -94,6 +103,13 @@ export default function PictureUploadComponent() {
         onClick={() => handleUploadClick('single')}
       >
         Upload Images
+      </button>
+
+      <button
+        className="mt-2 ml-4 px-4 py-2 bg-green-600 text-white rounded"
+        onClick={handleCameraClick}
+      >
+        📷 Open Camera
       </button>
 
       <div className="mt-4 grid grid-cols-2 gap-4">
@@ -160,12 +176,6 @@ export default function PictureUploadComponent() {
         >
           Submit All
         </button>
-      )}
-
-      {isUploading && (
-        <p className="mt-2 text-gray-500">
-          Uploading in the background... ({uploadQueue.length} file(s) remaining)
-        </p>
       )}
     </div>
   );

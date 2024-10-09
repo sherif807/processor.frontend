@@ -1,11 +1,9 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 
 export const UploadContext = createContext();
 
 export const UploadProvider = ({ children }) => {
-  const [uploadQueue, setUploadQueue] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [preparedImages, setPreparedImages] = useState([]); // Store accumulated image keys as state
+  const [preparedImages, setPreparedImages] = useState([]); // Store accumulated image keys
 
   const supportedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
@@ -72,65 +70,42 @@ export const UploadProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const processUploadQueue = async () => {
-      if (isUploading || uploadQueue.length === 0) return;
-  
-      const { images } = uploadQueue[0]; // Only handling images here for presigned URL
-      setIsUploading(true);
-  
-      try {
-        const imageKeys = [...preparedImages];  // Accumulate previously uploaded images
+  const uploadImage = async (file) => {
+    if (!isValidImage(file)) {
+      alert('Invalid file type: Only images are allowed.');
+      return;
+    }
 
-        for (const imageData of images) {
-          const { file } = imageData;
-  
-          if (!isValidImage(file)) {
-            alert('Invalid file type: Only images are allowed.');
-            setUploadQueue((prevQueue) => prevQueue.slice(1));
-            setIsUploading(false);
-            return;
-          }
-  
-          // Resize image and get the presigned URL
-          const resizedFile = await resizeImage(file);
-          const { preSignedUrl, fileName, fileType } = await getPreSignedUrl(resizedFile);
-  
-          // Now, upload the file using the pre-signed URL
-          const uploadResponse = await fetch(preSignedUrl, {
-            method: 'PUT', // Use PUT to upload the file to S3
-            headers: {
-              'Content-Type': fileType, // Set the correct content type
-            },
-            body: resizedFile, // Send the actual resized file
-          });
-  
-          if (!uploadResponse.ok) {
-            throw new Error('Failed to upload the image to S3');
-          }
-  
-          // Store the S3 key or fileName after a successful upload
-          imageKeys.push(fileName);
-        }
-  
-        setPreparedImages(imageKeys); // Update the prepared image keys state
-      } catch (error) {
-        console.error('Upload error:', error);
-      } finally {
-        setUploadQueue((prevQueue) => prevQueue.slice(1));
-        setIsUploading(false);
+    try {
+      const resizedFile = await resizeImage(file);
+      const { preSignedUrl, fileName, fileType } = await getPreSignedUrl(resizedFile);
+
+      // Upload the file using the pre-signed URL
+      const uploadResponse = await fetch(preSignedUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': fileType,
+        },
+        body: resizedFile,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload the image to S3');
       }
-    };
-  
-    processUploadQueue();
-  }, [uploadQueue, isUploading, preparedImages]);
+
+      // Store the S3 key or fileName after a successful upload
+      setPreparedImages((prev) => [...prev, fileName]);
+    } catch (error) {
+      console.error('Upload error:', error);
+    }
+  };
 
   const clearPreparedImages = () => {
     setPreparedImages([]); // Clear prepared images after submission
   };
 
   return (
-    <UploadContext.Provider value={{ uploadQueue, setUploadQueue, isUploading, preparedImages, clearPreparedImages }}>
+    <UploadContext.Provider value={{ preparedImages, uploadImage, clearPreparedImages }}>
       {children}
     </UploadContext.Provider>
   );

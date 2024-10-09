@@ -4,16 +4,15 @@ import { useContext } from 'react';
 import { UploadContext } from '../context/UploadContext';
 
 function GlobalUploadStatus() {
-  const { isUploading, uploadQueue } = useContext(UploadContext);
+  const { isUploading } = useContext(UploadContext);
 
-  if (uploadQueue.length === 0) {
-    return null; // Don't show anything if no files are being uploaded
+  if (!isUploading) {
+    return null; // Don't show anything if no uploads are in progress
   }
 
   return (
     <div className="fixed bottom-0 right-0 bg-gray-200 p-4 rounded">
-      {isUploading ? 'Uploading...' : 'Idle'}
-      <p>{uploadQueue.length} file(s) remaining</p>
+      Uploading...
     </div>
   );
 }
@@ -22,7 +21,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <UploadProvider>
       <Component {...pageProps} />
-      <GlobalUploadStatus /> {/* This will show the upload status globally */}
+      <GlobalUploadStatus /> {/* Show the upload status globally */}
     </UploadProvider>
   );
 }
