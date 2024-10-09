@@ -4,7 +4,7 @@ import CombinedItemForm from './CombinedItemForm';
 
 export default function PictureUploadComponent() {
   const fileInputRef = useRef(null);
-  const { uploadQueue, setUploadQueue, isUploading, preparedImages } = useContext(UploadContext);
+  const { uploadQueue, setUploadQueue, isUploading, preparedImages, clearPreparedImages } = useContext(UploadContext);
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadType, setUploadType] = useState('single');
 
@@ -22,6 +22,7 @@ export default function PictureUploadComponent() {
     }));
     setSelectedImages((prevImages) => [...prevImages, ...newImages]);
     setUploadQueue((prevQueue) => [...prevQueue, { images: newImages }]);
+    clearPreparedImages();
   };
 
   const handleUploadClick = (type) => {
