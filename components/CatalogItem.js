@@ -47,7 +47,7 @@ export default function CatalogItem({ item, isFirst, analytics }) {
   };
 
   return (
-    <div className="border-t border-gray-200 mt-4 relative">
+    <div className="border rounded-md shadow-md p-4 mt-4">
       <button
         className="w-full text-left text-gray-700 font-semibold py-2 hover:bg-gray-100 focus:outline-none flex flex-col space-y-2"
         onClick={toggleExpand}
@@ -80,13 +80,18 @@ export default function CatalogItem({ item, isFirst, analytics }) {
         onQuantityChange={(newQuantity) => setQuantity(newQuantity)}
         onConditionChange={(newCondition) => setCondition(newCondition)}
         onNotesChange={(newNotes) => setNotes(newNotes)}
+        labelClassName="mb-2 text-sm font-medium text-gray-700"
+        inputClassName="mb-4 p-2 border border-gray-300 rounded"
       />
 
-      {isExpanded && analytics && (
-        <div className="pl-0 pr-0 pb-2 text-sm text-gray-600">
-          <AnalyticsSlider analytics={analytics} item={item} />
-        </div>
-      )}
+      {/* Analytics Slider */}
+      {/* <AnalyticsSlider
+        analytics={item.analytics}
+        item={item}
+        itemId={item.id}
+        patchCatalogItem={patchCatalogItem}
+      /> */}
+
     </div>
   );
 }

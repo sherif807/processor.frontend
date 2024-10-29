@@ -1,31 +1,60 @@
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { CompletedDataAnalytics, LiveDataAnalytics, CompletedGraphsVisualization, LiveGraphsVisualization } from './DataVisualization';
+import { useState } from 'react';
 import EbayListingView from './EbayListingView';
+import ItemEditModal from './ItemEditModal';
 
-export default function AnalyticsSlider({ analytics, item }) {
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    adaptiveHeight: true,
+export default function AnalyticsSlider({ item, picture, purchasePicture, pendingPicture, dismissPicture }) {
+  console.log('AnalyticsSlider data:', item);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [itemProperties, setItemProperties] = useState(null);
+
+  // Open the modal with title, price, quantity, and condition
+  const handleListOneLikeThis = (title, price, item_id) => {
+    setItemProperties({
+      title,
+      price,
+      quantity: item.quantity,
+      condition: item.itemCondition,
+      item_id,
+      description: item.description || '',
+      best_offer_enabled: item.bestOfferEnabled,
+      shipping_profile_id: '230456061025', // Default value or fetched from somewhere
+      sku: item.id,
+    });
+
+    setModalIsOpen(true); // Open the modal
+  };
+
+  // Close the modal
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setItemProperties(null);
   };
 
   return (
-    <Slider {...settings}>
-      <div key="history" className="p-0">
-        <CompletedDataAnalytics analytics={analytics} completedUrl={item.links?.completedUrl} />
-        <EbayListingView data={item.prices?.ebayCompletedData} />
-        <CompletedGraphsVisualization data={item.prices?.ebayCompletedData} completedUrl={item.links?.completedUrl} />
+    <div className="flex min-h-screen">
+      <div className="w-1/2 p-4 overflow-hidden">
+        <h2 className="text-center font-bold mb-4">Completed</h2>
+        <div key="history" className="p-0 h-full">
+          <EbayListingView data={item?.prices?.ebayCompletedData || []} onListOneLikeThis={handleListOneLikeThis} />
+        </div>
       </div>
-      <div key="live" className="p-0">
-        <LiveDataAnalytics analytics={analytics} />
-        <EbayListingView data={item.prices?.ebayLiveData} />
-        <LiveGraphsVisualization data={item.prices?.ebayLiveData} liveUrl={item.links?.liveUrl} />
+
+      <div className="w-1/2 p-4 overflow-hidden">
+        <h2 className="text-center font-bold mb-4">Live</h2>
+        <div key="live" className="p-0 h-full">
+          <EbayListingView data={item?.prices?.ebayLiveData || []} onListOneLikeThis={handleListOneLikeThis} />
+        </div>
       </div>
-    </Slider>
+
+      {/* Modal for editing item properties */}
+      <ItemEditModal
+        isOpen={modalIsOpen}
+        closeModal={closeModal}
+        itemProperties={itemProperties}
+        setItemProperties={setItemProperties}
+        picture={picture}
+        purchasePicture={purchasePicture} // Pass the function
+      />
+    </div>
   );
 }

@@ -120,7 +120,7 @@ export default function PictureUploadComponent() {
           <div key={index} className="relative">
             <img src={imageData.preview} alt="Preview" className="w-full h-auto" />
             <button
-              className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
+              className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-3 "
               onClick={() => handleRemoveImage(index)}
             >
               X

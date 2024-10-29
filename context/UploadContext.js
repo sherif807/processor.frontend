@@ -46,31 +46,32 @@ export const UploadProvider = ({ children }) => {
     });
   };
 
-  const getPreSignedUrl = async (file) => {
+  const getPreSignedUrl = async (file, overwrite = false) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const formData = new FormData();
     formData.append('file', file);
-
+  
     try {
       const response = await fetch(`${apiUrl}/api/upload/presigned-url`, {
         method: 'POST',
         body: formData,
       });
-
+  
       if (!response.ok) throw new Error('Failed to get pre-signed URL');
-
+  
       const jsonData = await response.json();
       return {
         preSignedUrl: jsonData.url,
-        fileName: jsonData.fileName, // This fileName is what we will save to the backend later
+        fileName: overwrite ? file.name : jsonData.fileName, // Use existing file name if overwriting
         fileType: jsonData.fileType,
       };
     } catch (error) {
       throw error;
     }
   };
+  
 
-  const uploadImage = async (file) => {
+  const uploadImage = async (file, overwrite = flase) => {
     if (!isValidImage(file)) {
       alert('Invalid file type: Only images are allowed.');
       return;
@@ -78,8 +79,9 @@ export const UploadProvider = ({ children }) => {
 
     try {
       const resizedFile = await resizeImage(file);
-      const { preSignedUrl, fileName, fileType } = await getPreSignedUrl(resizedFile);
+      const { preSignedUrl, fileName, fileType } = await getPreSignedUrl(resizedFile, overwrite);
 
+      console.log(preSignedUrl, fileName, fileType); // Debugging
       // Upload the file using the pre-signed URL
       const uploadResponse = await fetch(preSignedUrl, {
         method: 'PUT',
@@ -103,6 +105,7 @@ export const UploadProvider = ({ children }) => {
   const clearPreparedImages = () => {
     setPreparedImages([]); // Clear prepared images after submission
   };
+  
 
   return (
     <UploadContext.Provider value={{ preparedImages, uploadImage, clearPreparedImages }}>

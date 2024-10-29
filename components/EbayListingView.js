@@ -1,115 +1,88 @@
 import { useState, useRef } from 'react';
 
-export default function EbayListingView({ data }) {
-  const [itemsToShow, setItemsToShow] = useState(5); // Start by showing 5 items
-  const listRef = useRef(null); // Ref to scroll back to the list container
+export default function EbayListingView({ data, onListOneLikeThis }) {
+  const listRef = useRef(null);
+  const [hoveredImageIndex, setHoveredImageIndex] = useState(null);
+  const [selectedCondition, setSelectedCondition] = useState('');
 
-  const showMoreItems = () => {
-    if (itemsToShow + 5 <= data.length) {
-      setItemsToShow((prev) => prev + 5); // Show 5 more items
-    } else {
-      setItemsToShow(data.length); // If fewer than 5 items are left, show all
-    }
+  const handleMouseEnter = (index) => {
+    setHoveredImageIndex(index);
   };
 
-  const showLessItems = () => {
-    if (itemsToShow - 5 >= 5) {
-      setItemsToShow((prev) => prev - 5); // Remove 5 items if more than 5 items are shown
-    } else {
-      setItemsToShow(5); // Ensure we never go below showing 5 items
-    }
-    // Scroll back to the top of the list
-    listRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleMouseLeave = () => {
+    setHoveredImageIndex(null);
   };
+
+  const filteredData = selectedCondition
+    ? data.filter((listing) => listing.readableCondition === selectedCondition)
+    : data;
 
   return (
-    <div ref={listRef}> {/* Use this ref to scroll to the top of the list */}
-      {/* Listing grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {data.slice(0, itemsToShow).map((listing, index) => (
+    <div className="flex-1 h-[80vh] p-4 overflow-y-auto">
+      {/* Dropdown for selecting condition */}
+      <div className="mb-4">
+        <select
+          value={selectedCondition}
+          onChange={(e) => setSelectedCondition(e.target.value)}
+          className="p-2 border rounded-md"
+          style={{ width: '200px' }}
+        >
+          <option value="">All Conditions</option>
+          <option value="Brand New">Brand New</option>
+          <option value="Pre-Owned">Pre-Owned</option>
+          <option value="Open Box">Open Box</option>
+        </select>
+      </div>
+
+      <div ref={listRef} className="space-y-4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300">
+        {filteredData.map((listing, index) => (
           <div
             key={index}
-            className="border p-4 shadow-md flex space-x-4 items-start"
+            className="border p-4 shadow-md flex flex-col items-start relative"
           >
-            {/* Image */}
-            <a
-              href={`https://www.ebay.com/itm/${listing.itemId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0"
+            {/* Image with hover effect */}
+            <div
+              className="relative w-full"
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
             >
               <img
                 src={listing.imageUrl}
                 alt={listing.title}
-                className="w-16 h-16 object-cover"
+                className={`object-cover w-full rounded-md transition-transform duration-300 ease-in-out ${
+                  hoveredImageIndex === index ? 'transform scale-105' : ''
+                }`}
               />
-            </a>
+            </div>
 
             {/* Title and details */}
-            <div className="flex flex-col justify-start space-y-1">
-              {/* Title */}
+            <div className="text-left mt-2 w-full">
               <a
                 href={`https://www.ebay.com/itm/${listing.itemId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline text-sm font-medium text-left"
+                className="text-blue-500 hover:underline text-lg font-medium block"
               >
                 {listing.title}
               </a>
-
-              {/* Row with condition, price, and shipping */}
-              <div className="flex space-x-4 text-xs text-gray-500 mt-1">
-                <div>
-                  <p>Condition:</p>
-                  <p className="text-gray-800 mt-1">{listing.readableCondition}</p>
-                </div>
-                <div>
-                  <p>Price:</p>
-                  <p
-                    className={`font-semibold mt-1 ${
-                      listing.soldStatus === 1
-                        ? 'text-green-600' // Sold - Green
-                        : listing.soldStatus === 0
-                        ? 'text-red-500'   // Not Sold - Red
-                        : ''               // Default color if soldStatus is null
-                    }`}
-                  >
-                    ${listing.price}
-                  </p>
-                </div>
-                <div>
-                  <p>Shipping:</p>
-                  <p className="mt-1">${listing.shippingPrice || 'Not specified'}</p>
-                </div>
-              </div>
+              <p className="text-gray-500">
+                Condition: <span className="text-gray-800">{listing.readableCondition}</span>
+              </p>
+              <p className="text-gray-500">Price: ${listing.price}</p>
+              <p className="text-gray-500">Shipping: ${listing.shippingPrice || 0}</p>
+              <p className={`font-bold ${listing.soldStatus === 1 ? 'text-green-600' : 'text-red-500'}`}>
+                Total Price: ${listing.totalPrice.toFixed(2)}
+              </p>
+              <button
+                onClick={() => onListOneLikeThis(listing.title, listing.totalPrice, listing.itemId)}
+                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                List One Like This
+              </button>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Show More / Show Less buttons */}
-      {data.length > 5 && ( // Only show the buttons if there are more than 5 listings
-        <div className="flex justify-center mt-4 space-x-4">
-          <button
-            className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
-              itemsToShow >= data.length ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            onClick={showMoreItems}
-            disabled={itemsToShow >= data.length}
-          >
-            Show More
-          </button>
-          <button
-            className={`bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ${
-              itemsToShow <= 5 ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            onClick={showLessItems}
-            disabled={itemsToShow <= 5}
-          >
-            Show Less
-          </button>
-        </div>
-      )}
     </div>
   );
 }

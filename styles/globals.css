@@ -85,3 +85,18 @@ a {
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
   scrollbar-width: none; /* For Firefox */
 }
+
+
+.modal-content {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+.modal-overlay {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 0.8 !important;
+  z-index: 9998 !important;
+}
