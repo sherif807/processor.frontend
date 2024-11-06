@@ -3,6 +3,7 @@ import { useAbly } from '../hooks/useAbly';
 import CatalogItem from './CatalogItem';
 import AnalyticsSlider from './AnalyticsSlider';
 import PictureDisplay from './PictureDisplay';
+import { CheckIcon } from '@heroicons/react/24/outline'; // Importing CheckIcon from Heroicons
 
 export default function PictureViewComponent({ page, setTotalItems }) {
   const [pictures, setPictures] = useState([]);
@@ -134,6 +135,15 @@ export default function PictureViewComponent({ page, setTotalItems }) {
     }
   };
 
+  // Handle copying the picture ID
+  const copyToClipboard = (id) => {
+    navigator.clipboard.writeText(id).then(() => {
+      alert(`Copied ID: ${id} to clipboard`);
+    }).catch((err) => {
+      console.error('Failed to copy text: ', err);
+    });
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -163,7 +173,14 @@ export default function PictureViewComponent({ page, setTotalItems }) {
                 <p className="mt-4">No catalog items found</p>
               )}
 
-              <div> {picture.id}</div>
+              <div className="flex items-center gap-2">
+                <span>{picture.id}</span>
+                <CheckIcon
+                  className="h-5 w-5 text-gray-600 cursor-pointer"
+                  onClick={() => copyToClipboard(picture.id)}
+                  title="Copy ID"
+                />
+              </div>
 
               <PictureDisplay
                 picture={picture}
